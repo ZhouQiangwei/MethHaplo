@@ -1,0 +1,35 @@
+--------------------------------------------
+1. make
+2. make install
+
+
+## install gsl (if dont have)
+---------------------------------------------
+1, download gsl
+
+http://ftp.club.cc.cmu.edu/pub/gnu/gsl/
+
+2 install
+
+tar -zxvf gsl-1.9.tar.gz
+cd gsl-xx
+
+If you have root:
+./configure
+else:
+./configure --prefix=/path/to/your/gsl/
+make
+make install
+
+---------------------
+
+If not, you can try setting the CPATH, LIBRARY_PATH and LD_LIBRARY_PATH variables:
+
+export CPATH=/path/to/lib/gsl-2.2/include/
+export LIBRARY_PATH=/path/to/lib/gsl-2.2/lib/
+export LD_LIBRARY_PATH=/path/to/lib/gsl-2.2/lib/:$LD_LIBRARY_PATH
+If it stil won't work, try creating, on your GSL folder, a symlink named lib64 to the folder lib:
+
+cd /path/to/lib/gsl-2.2
+ln -s lib lib64
+

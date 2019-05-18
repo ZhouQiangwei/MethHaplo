@@ -29,7 +29,13 @@ TOCOMPILE_others = $(builddir)/mergehap.o
 TARGET_homo = $(srcdir)/homometh
 TOCOMPILE_homo = $(builddir)/homometh.o
 
-all: ${TOCOMPILE} ${TOCOMPILE_asm} ${TOCOMPILE_asman} ${TOCOMPILE_others} ${TOCOMPILE_homo} ${TOCOMPILE_asmsitesan} ${TOCOMPILE_bsmerge} ${TOCOMPILE_bsmergehic}
+TARGET_bam2md = $(srcdir)/bam2md
+TOCOMPILE_bam2md = $(builddir)/bam2md.o
+
+TARGET_filgenome = $(srcdir)/filgenome
+TOCOMPILE_filgenome = $(builddir)/filgenome.o
+
+all: ${TOCOMPILE} ${TOCOMPILE_asm} ${TOCOMPILE_asman} ${TOCOMPILE_others} ${TOCOMPILE_homo} ${TOCOMPILE_asmsitesan} ${TOCOMPILE_bsmerge} ${TOCOMPILE_bsmergehic} ${TOCOMPILE_bam2md} ${TOCOMPILE_filgenome}
 	${CC} $(LDFLAGS) -o $(TARGET_asm) ${TOCOMPILE_asm}
 	${CC} $(LDFLAGS) -o $(TARGET_asman) ${TOCOMPILE_asman}
 	${CC} $(LDFLAGS) -o $(TARGET_asmsitesan) ${TOCOMPILE_asmsitesan}
@@ -37,6 +43,8 @@ all: ${TOCOMPILE} ${TOCOMPILE_asm} ${TOCOMPILE_asman} ${TOCOMPILE_others} ${TOCO
 	${CC} $(LDFLAGS) -o $(TARGET_bsmerge) ${TOCOMPILE_bsmerge}
 	${CC} $(LDFLAGS) -o $(TARGET_bsmergehic) ${TOCOMPILE_bsmergehic}
 	${CC} $(LDFLAGS) -o $(TARGET_others) ${TOCOMPILE_others}
+	${CC} $(LDFLAGS) -o $(TARGET_filgenome) ${TOCOMPILE_filgenome}
+	${CC} $(LDFLAGS) -o $(TARGET_bam2md) ${TOCOMPILE_bam2md} ${LIBS}
 	${CC} $(LDFLAGS) -o $(TARGET) ${TOCOMPILE} ${LIBS}
 	cd submodules/HapCUT2 && make
 
@@ -47,6 +55,12 @@ $(TOCOMPILE): $(srcdir)/methyhap.cpp $(srcdir)/methyhap.hpp $(srcdir)/paired.cpp
 
 $(TOCOMPILE_asm): $(srcdir)/ASM.cpp
 	$(CC) -c $(srcdir)/ASM.cpp -o $(builddir)/ASM.o
+
+$(TOCOMPILE_filgenome): $(srcdir)/filgenome.cpp
+	$(CC) -c $(srcdir)/filgenome.cpp -o $(builddir)/filgenome.o
+
+$(TOCOMPILE_bam2md): $(srcdir)/bam2md.cpp
+	$(CC) -c $(srcdir)/bam2md.cpp -o $(builddir)/bam2md.o
 
 $(TOCOMPILE_asman): $(srcdir)/ASManno.cpp
 	$(CC) -c $(srcdir)/ASManno.cpp -o $(builddir)/ASManno.o
@@ -70,7 +84,7 @@ $(TOCOMPILE_bsmergehic): $(srcdir)/bsmergehic.cpp
 	$(CC) ${FLAGS} ${LIBS} -c $(srcdir)/$*.c
 
 clean:
-	rm -f $(builddir)/*.o $(TARGET) $(TARGET_asm) $(TARGET_asman) $(TARGET_homo) $(TARGET_others) $(TARGET_asmsitesan) $(TARGET_bsmerge) $(TARGET_bsmergehic)
+	rm -f $(builddir)/*.o $(TARGET) $(TARGET_asm) $(TARGET_asman) $(TARGET_homo) $(TARGET_others) $(TARGET_asmsitesan) $(TARGET_bsmerge) $(TARGET_bsmergehic) $(TARGET_bam2md) $(TARGET_filgenome)
 	rm -rf submodules/HapCUT2/build/
 	if [ -d "bin" ]; then rm -r bin; fi
 
@@ -88,3 +102,5 @@ install:
 	cp submodules/HapCUT2/build/extractHAIRS ./bin/extracthairs
 	cp scripts/methyhaplo ./bin/
 	cp scripts/bamStrand ./bin/
+	cp src/bam2md ./bin/
+	cp src/filgenome ./bin/

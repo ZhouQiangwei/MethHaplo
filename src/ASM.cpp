@@ -78,8 +78,8 @@ int main(int argc,char *argv[])
 		"\t-b                    output file. Allelically methylated regions(AMRs) bed format file.\n"
 		"\t-p|--pvale [double]   Pvalue cutoff. default: 0.01\n"
 		"\t-c|--cutoff [int]     print the region that >= number of adjant Cs. default: 4\n"
-		"\t-w|--weight [double]  (max+second_max)/all > double(example:0.9)\n"
-		"\t-f [double]           log(max/second_max) < fc.(exaple:1)\n"
+		"\t-w|--weight [double]  (max+second_max)/all > double(0.8)\n"
+		"\t-f [double]           log(max/second_max) < fc.(2)\n"
 		"\t-ic [int]             min coverage, default 4.\n"
 		"\t-xc [int]             max coverage, default 1000.\n"
 		"\t-h|--help\n";
@@ -89,7 +89,7 @@ int main(int argc,char *argv[])
 	char* bedOUT;
 	bool Print_Bed=false;
 	std::string pvalue="0.01";
-	int cutoffNumber=4;double weight=0.9;double FC=1.0; //1.0*INT_MAX;
+	int cutoffNumber=4;double weight=0.8;double FC=2.0; //1.0*INT_MAX;
         int minCover = 4;int maxCover=1000;
 	for(int i=1;i<argc;i++)
 	{

@@ -1,0 +1,7 @@
+{
+    "files.associations": {
+        "deque": "cpp",
+        "algorithm": "cpp",
+        "new": "cpp"
+    }
+}

@@ -26,7 +26,7 @@ sub error
     }
     die
         "Methyhaplo: Combining Allele-specific DNA Methylation and SNPs for Haplotype Assembly\n",
-        "Usage: methyhaplo -M [mode] -m methfile -s <sam>/-b <bam> -o outputprefix\n",
+        "Usage: methyhaplo -M [mode] -a Y -m methfile -s <sam>/-b <bam> -o outputprefix\n",
         "Options:\n",
         "   -M <string> [hap|asm]         methyhaolo analysis mode\n",
         "                                     hap: iterative approach, prefer longer haplotype results;\n",
@@ -37,6 +37,9 @@ sub error
         "   -s, --sam <samfile>           sam file from batmeth2-align.  This file should be coordinate sorted, \n",
         "                                     using the <samtools sort> command, and must contain methylstatus[MD:Z:].\n",
         "   -b, --bam <bamfile>           bam file, should be coordinate sorted. (use this option or -s option but not both)\n",
+        "   -a <Y/N>                      If bam/sam file contain MD state by batmeth2 calmeth scripts.\n",
+        "                                     If not, please define genome location by -g paramater.\n",
+        "   -g, --genome <genome>         If bam/sam file isnot contain MD.\n",
         "   -q <int>                      only process reads with mapping quality >= INT [default >= 20].\n",
         "   -c, --context                 methylation context process for methyhaplo. CG, CHG, CHH, ALL[default].\n",
         "   -C, --NMETH                   Number of methylated reads cover cytosine site. default: 2 [m>=2]\n",
@@ -68,6 +71,8 @@ sub parse_params
         if ( $arg eq '-o' || $arg eq '--out' ) { $$opts{output}=shift(@ARGV); next; }
         if ( $arg eq '-s' || $arg eq '--sam' ) { $$opts{samfile}=shift(@ARGV); next; }
         if ( $arg eq '-b' || $arg eq '--bam' ) { $$opts{bamfile}=shift(@ARGV); next; }
+        if ( $arg eq '-a' ) { $$opts{mdstate}=shift(@ARGV); next; }
+        if ( $arg eq '-g' || $arg eq '--genome' ) { $$opts{genome}=shift(@ARGV); next; }
         if ( $arg eq '-q') { $$opts{qual}=shift(@ARGV); next; }
         if ( $arg eq '-c' || $arg eq '--context' ) { $$opts{context}=shift(@ARGV); next; }
         if ( $arg eq '-C' || $arg eq '--NMETH' ) { $$opts{Nmeth}=shift(@ARGV); next; }
@@ -132,13 +137,28 @@ sub runmain
         $layout = "--PE";
     }
     if($$opts{mode} eq "asm"){
-        if( exists($$opts{samfile})){
-            $cmd = "$dirs/methyhap -o $$opts{output} -m $$opts{methfile} -s $$opts{samfile} -c $context -M $nmeth -N $ncover -f $Mfloat --minIS $minIS --maxIS $maxIS -q $qual $layout";
-        }elsif( exists($$opts{bamfile})){
-            $cmd = "$dirs/methyhap -o $$opts{output} -m $$opts{methfile} -b $$opts{bamfile} -c $context -M $nmeth -N $ncover -f $Mfloat --minIS $minIS --maxIS $maxIS -q $qual $layout";
+        if($$opts{mdstate} eq "N" && exists($$opts{genome}) ){
+            print("[Methyhaplo] process genome file!\n");
+            $cmd = "$dirs/filgenome $$opts{genome} x";
+            system($cmd) == 0 or die "failed: $!";
+            if( exists($$opts{samfile})){
+                $cmd = "$dirs/bam2md -g $$opts{genome} -i $$opts{samfile} | samtools sort -o $$opts{samfile}.md.bam - ";
+            }elsif( exists($$opts{bamfile})){
+                $cmd = "$dirs/bam2md -g $$opts{genome} -b $$opts{bamfile} | samtools sort -o $$opts{samfile}.md.bam - ";
+            }
+            print("[Methyhaplo] process bam file and sort!\n");
+            system($cmd) == 0 or die "failed: $!";
+            $cmd = "$dirs/methyhap -o $$opts{output} -m $$opts{methfile} -b $$opts{samfile}.md.bam  -c $context -M $nmeth -N $ncover -f $Mfloat --minIS $minIS --maxIS $maxIS -q $qual $layout";
+            system($cmd) == 0 or die "failed: $!";
         }else{
-            print("Please define alignment file with -s or -b paramater!\n");
-            exit(1);
+            if( exists($$opts{samfile})){
+                $cmd = "$dirs/methyhap -o $$opts{output} -m $$opts{methfile} -s $$opts{samfile} -c $context -M $nmeth -N $ncover -f $Mfloat --minIS $minIS --maxIS $maxIS -q $qual $layout";
+            }elsif( exists($$opts{bamfile})){
+                $cmd = "$dirs/methyhap -o $$opts{output} -m $$opts{methfile} -b $$opts{bamfile} -c $context -M $nmeth -N $ncover -f $Mfloat --minIS $minIS --maxIS $maxIS -q $qual $layout";
+            }else{
+                print("Please define alignment file with -s or -b paramater!\n");
+                exit(1);
+            }
         }
         system($cmd) == 0 or die "failed: $!";
         $cmd = "$dirs/ASM -i $$opts{output}.plus.txt -o $$opts{output}.asm.plus";

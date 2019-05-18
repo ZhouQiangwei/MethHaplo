@@ -31,6 +31,7 @@ d) The binary of Methyhaplo will be created in current folder
 You can download the test data on 
 
 ### Usage
+1. MethyHaplo command
         Methyhaplo: Combining Allele-specific DNA Methylation and SNPs for Haplotype Assembly
         Usage: methyhaplo -M [mode] -a Y -m methfile -s <sam>/-b <bam> -o outputprefix
         Options:
@@ -61,4 +62,10 @@ You can download the test data on
            -p, --parallel <int>          Change the number of sorts run concurrently to <int>
            -t, --temporary-directory     Use a directory other than /tmp as the temporary directory for sorting.
            -h, -?, --help                This help message.
+
+2. Allele-specific DNA methylation region visulization
+```bash
+python methpoint.py chr18_26621440_26621650.md.sort.bam chr18:26621570-26621650 . chr18_26621570_26621650.UM 0
+```
+![asmexample](scripts/asmexample.png)
 

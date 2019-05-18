@@ -69,5 +69,5 @@ You can download the test data on
 ```bash
 python methpoint.py chr18_26621440_26621650.md.sort.bam chr18:26621570-26621650 . chr18_26621570_26621650.UM 0
 ```
-![asmexample](scripts/asmexample.png)
+![asmexample](scripts/asmexample.png){:height="100" width="100"}
 

@@ -1,11 +1,11 @@
 ## Methyhaplo: Combining Allele-specific DNA Methylation and SNPs for Haplotype Assembly
+------
 DNA methylation is an important epigenetic modification that plays a critical role in most eukaryotic organisms. Parental alleles in haploids may exhibit different methylation patterns, which can lead to different phenotypes, and even different therapeutic and drug responses to diseases. However, there is currently no suitable software to obtain accurate DNA methylation haplotype results to our knowledge. To address this issue, we developed a new method, Methyhaplo, for haplotype assembly with allele-specific DNA methylation and SNPs from whole-genome bisulfite sequencing (WGBS) data. Our results showed that the haplotype assembly with allele-specific DNA methylation and SNPs was ten times longer than that with just SNPs. Moreover, Methyhaplo could integrate WGBS-Seq and Hi-C to obtain the better haplotype results. 
 
 ## This is a README file for the usage of Methyhaplo.
 ------
 
 ## REQUIREMENTS
-------
 1. gcc (v4.8) , gsl library
 2. SAMtools
 3. Python3
@@ -13,13 +13,16 @@ DNA methylation is an important epigenetic modification that plays a critical ro
 
 ## INSTALL
 ------
-a) Download 
+a) Download
 `git clone https://github.com/ZhouQiangwei/Methyhaplo.git`
+
 b) Change directory into the top directory of Methyhaplo
 `cd Methyhaplo`
+
 c) Type
 - make
 - make install
+
 d) The binary of Methyhaplo will be created in current folder
 
 ## USAGE of Methyhaplo

@@ -10,7 +10,7 @@
 #include <vector>
 #include <time.h>
 #include <algorithm>
-#include "methyhaplo.hpp"
+#include "methyhap.hpp"
 /**
  * Input format, sam format from batmeth2  MD:Z:=================h==========hh=hhh=====h=================h=====h================x==h=
 *SRR179602.48    0       chr3    123850297       60      85M     *       0       0       AAGGAGTTTTTGAAAAATATTAAAAGGGTTATTTAAATATTAAGAAGTAAGATTGTATTTGAATTTGATGAAATTGATGGTAGTT   DEC@=CEBECEEAEE5DD<>CACAC@ADDBBDD?D5=CCCD?DD=ACAC@C,>;?DCDDA?C5CC?D-:DD-:=5DBAD?CBBBA   XT:A:U  NM:i:0  MD:Z:=================h==========hh=hhh=====h=================h=====h================x==h=      XB:Z:BSW
@@ -141,9 +141,9 @@ int main(int argc, char* argv[])
 		"\t-q INT                only process reads with mapping quality >= INT [default >= 20].\n"
 		"\t-v|--snp              SNP file with genotypes for a single individual in BS-SNPer format.\n" 
 		"\t--vcf                 SNP file with genotypes for a single individual in VCF format, V4.1. (use this option or -v option but not both)\n"
-		//"\t--PE                  paired-end reads.[default:single-end]\n"
+		"\t--PE                  paired-end reads.[default:single-end]\n"
 		"\t-m|--methf            methratio file from batmeth2.\n"
-                "\t-c|--context          methylation context process for methyhaplo. CG, CHG, CHH, ALL[default].\n"
+        "\t-c|--context          methylation context process for methyhaplo. CG, CHG, CHH, ALL[default].\n"
 		"\t-M|--NMETH            Number of methylated reads cover cytosine site. default: 2 [m>=2]\n"
 		"\t-N|--NCOVER           Number of coverage reads in cytosine site. default: 6 [n >= 6]\n"
 		"\t-f|--MFloat           cutoff of methratio. default: 0.2 [ f =< meth <= 1-f]\n"
@@ -186,9 +186,9 @@ int main(int argc, char* argv[])
 		{
 			Align_fileName=argv[++i];
 		}else if(!strcmp(argv[i], "-c") || !strcmp(argv[i], "--context"))
-                {
-                        strcpy(processContext, argv[++i]);
-                }else if(!strcmp(argv[i], "--PE"))
+        {
+            strcpy(processContext, argv[++i]);
+        }else if(!strcmp(argv[i], "--PE"))
 		{
 			paired_end=true;
 		}else if(!strcmp(argv[i], "-m") || !strcmp(argv[i], "--methf"))
@@ -204,6 +204,12 @@ int main(int argc, char* argv[])
 		}else if(!strcmp(argv[i], "-f") || !strcmp(argv[i], "--MFloat"))
 		{
 			MFloat=atof(argv[++i]);
+		}else if(!strcmp(argv[i], "--minIS"))
+		{
+			minIS=atoi(argv[++i]);
+		}else if(!strcmp(argv[i], "--maxIS"))
+		{
+			maxIS=atoi(argv[++i]);
 		}
 		else if(!strcmp(argv[i], "-b") || !strcmp(argv[i], "--bamfile"))
 		{
@@ -226,7 +232,7 @@ int main(int argc, char* argv[])
 		}
 		else
 		{
-			printf("%s \n",Help_String);
+			printf("%s, %s \n",argv[i], Help_String);
 			exit(0);
 		}
 	}
@@ -433,11 +439,11 @@ int main(int argc, char* argv[])
 			*/
 			if(paired_end)
 			{
-				Show_log("Paired-end mode");
+				Show_log("Paired mode");
 				paiedend_methyhaplo(bamformat,Align_fileName,Output_Name);
 				return 1;
 			}else
-				Show_log("Single-end mode");
+				Show_log("Single mode");
 			
 			//process SAM file
 			FILE* SAM_File;

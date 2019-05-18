@@ -5,8 +5,8 @@ LIBS = -m64 -I./src/samtools-0.1.18/ -L./src/samtools-0.1.18/ -lbam -lz -lpthrea
 srcdir = ./src
 builddir = ./build
 
-TARGET = $(srcdir)/methyhaplo
-TOCOMPILE = $(builddir)/methyhaplo.o $(builddir)/paired.o $(builddir)/processPairedBlock.o
+TARGET = $(srcdir)/methyhap
+TOCOMPILE = $(builddir)/methyhap.o $(builddir)/paired.o $(builddir)/processPairedBlock.o
 
 TARGET_asm = $(srcdir)/ASM
 TOCOMPILE_asm = $(builddir)/ASM.o
@@ -40,8 +40,8 @@ all: ${TOCOMPILE} ${TOCOMPILE_asm} ${TOCOMPILE_asman} ${TOCOMPILE_others} ${TOCO
 	${CC} $(LDFLAGS) -o $(TARGET) ${TOCOMPILE} ${LIBS}
 	cd submodules/HapCUT2 && make
 
-$(TOCOMPILE): $(srcdir)/methyhaplo.cpp $(srcdir)/methyhaplo.hpp $(srcdir)/paired.cpp $(srcdir)/paired.hpp $(srcdir)/processPairedBlock.cpp $(srcdir)/processPairedBlock.hpp $(srcdir)/common.hpp $(srcdir)/alignRead.h | $(builddir)
-	$(CC) -c $(srcdir)/methyhaplo.cpp -o $(builddir)/methyhaplo.o
+$(TOCOMPILE): $(srcdir)/methyhap.cpp $(srcdir)/methyhap.hpp $(srcdir)/paired.cpp $(srcdir)/paired.hpp $(srcdir)/processPairedBlock.cpp $(srcdir)/processPairedBlock.hpp $(srcdir)/common.hpp $(srcdir)/alignRead.h | $(builddir)
+	$(CC) -c $(srcdir)/methyhap.cpp -o $(builddir)/methyhap.o
 	$(CC) -c $(srcdir)/paired.cpp -o $(builddir)/paired.o
 	$(CC) -c $(srcdir)/processPairedBlock.cpp -o $(builddir)/processPairedBlock.o
 
@@ -72,15 +72,19 @@ $(TOCOMPILE_bsmergehic): $(srcdir)/bsmergehic.cpp
 clean:
 	rm -f $(builddir)/*.o $(TARGET) $(TARGET_asm) $(TARGET_asman) $(TARGET_homo) $(TARGET_others) $(TARGET_asmsitesan) $(TARGET_bsmerge) $(TARGET_bsmergehic)
 	rm -rf submodules/HapCUT2/build/
+	if [ -d "bin" ]; then rm -r bin; fi
 
 install:
-	cp src/methyhaplo ./
-	cp src/ASM ./
-	cp src/ASManno ./
-	cp src/homometh ./
-	cp src/mergehap ./
-	cp src/ASMannoSites ./
-	cp src/bsmerge ./
-	cp src/bsmergehic ./
-	cp submodules/HapCUT2/build/HAPCUT2 ./hapcut2
-	cp submodules/HapCUT2/build/extractHAIRS ./extracthairs
+	if [ -d "bin" ]; then echo bin exists; else mkdir bin; fi
+	cp src/methyhap ./bin/
+	cp src/ASM ./bin/
+	cp src/ASManno ./bin/
+	cp src/homometh ./bin/
+	cp src/mergehap ./bin/
+	cp src/ASMannoSites ./bin/
+	cp src/bsmerge ./bin/
+	cp src/bsmergehic ./bin/
+	cp submodules/HapCUT2/build/HAPCUT2 ./bin/hapcut2
+	cp submodules/HapCUT2/build/extractHAIRS ./bin/extracthairs
+	cp scripts/methyhaplo ./bin/
+	cp scripts/bamStrand ./bin/

@@ -55,6 +55,8 @@ int main(int argc,char *argv[])
         fprintf(stderr, "Usage:\n    program plushaplo neghaplo > merge.haplo\n");
         exit(0);
     }
+    printf("[Methyhaplo] %s\n", argv[1]);
+    printf("[Methyhaplo] %s\n", argv[2]);
     char methyhaploIN[100];strcpy(methyhaploIN, argv[1]);
     char hicIN[100];strcpy(hicIN, argv[2]);
     std::vector<Block> Hap;

@@ -73,7 +73,7 @@ int main(int argc,char *argv[])
 	printf("\nBatMeth2::ASM \nversion: v1.0\n\n");
 	const char* Help_String="Command Format :  ASM [options] -i <haplotype result> -o <ASM out result>\n"
 		"\n======================== PROGRAM OPTIONS ========================\n\n"
-		"\t-o|--out              Output file prefix. Allele-specific methylation(ASM) output.\n"
+		"\t-o|--out              Output file. Allele-specific methylation(ASM) output.\n"
 		"\t-i                    input file.  This file is the result of methyhaplo.\n"
 		"\t-b                    output file. Allelically methylated regions(AMRs) bed format file.\n"
 		"\t-p|--pvale [double]   Pvalue cutoff. default: 0.01\n"

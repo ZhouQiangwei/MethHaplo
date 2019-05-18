@@ -340,7 +340,7 @@ void paiedend_methyhaplo(bool bamformat,char* Align_fileName,char* Output_Name)
 		//process bar
 		nReads++;
 		if (nReads % 1000000 == 0) {
-			printf("\ncoord: %d %d ||size: %d %d ||readpos: %d %d ||DB: %d %d %d %d\n", pos_first_end_coordinate, neg_first_end_coordinate, pos_vDnaMethylMap.size(), Neg_vDnaMethylMap.size(), read.position, read.flag, pos_readDB.size(), neg_readDB.size(), pos_smallerrightpos, neg_smallerrightpos);
+			printf("\ncoord: %d %d %d ||size: %d %d ||readpos: %d %d ||DB: %d %d %d %d\n", pos_processed_coordinate, pos_first_end_coordinate, neg_first_end_coordinate, pos_vDnaMethylMap.size(), Neg_vDnaMethylMap.size(), read.position, read.flag, pos_readDB.size(), neg_readDB.size(), pos_smallerrightpos, neg_smallerrightpos);
 			Show_Progress(nReads);
 		}
 		if(!bamformat) sscanf(s2t,"%s%d%s%d%d%s%s%d%d%s%s%*[^0-9]%i\tMD:Z:%s",read.readid,&(read.flag),read.chrom,&(read.position),&(read.Quality),read.cigar,\
@@ -357,6 +357,7 @@ void paiedend_methyhaplo(bool bamformat,char* Align_fileName,char* Output_Name)
 		}
 
 		nowloc=read.position;
+        if(strcmp(read.matechrom, "=") == 0 && read.IS == 0) read.IS = read.position - read.mateposition;
 		read.span = read.IS>0?read.IS:-1*read.IS;
         int read_valid_len=Get_read_valid_Length_and_is(read.cigar, containIS);
         if(containIS)
@@ -487,7 +488,7 @@ void paiedend_methyhaplo(bool bamformat,char* Align_fileName,char* Output_Name)
                     if( pos_first_start_coordinate==-1 || pos_first_end_coordinate==-1)//diff chromsome
                     {
                         pos_first_start_coordinate = read.position;
-			if(strcmp(read.matechrom, "=") == 0)
+			if(strcmp(read.matechrom, "=") == 0 && read.span <=maxIS && read.span>=minIS)
                         	pos_first_end_coordinate   = read.mateposition + read_valid_len;
 			else pos_first_end_coordinate   = read.position + read_valid_len;
                     }
@@ -507,7 +508,7 @@ void paiedend_methyhaplo(bool bamformat,char* Align_fileName,char* Output_Name)
 					pos_vDnaMethylMap.pop_front();
 					if(pos_vDnaMethylMap.size()<=0) break;
 					pos_first_start_coordinate = pos_vDnaMethylMap[0].position;
-					if(strcmp(pos_vDnaMethylMap[0].matechrom, "=") == 0)
+					if(strcmp(pos_vDnaMethylMap[0].matechrom, "=") == 0 && pos_vDnaMethylMap[0].span <=maxIS && pos_vDnaMethylMap[0].span>=minIS )
 						pos_first_end_coordinate = pos_vDnaMethylMap[0].mateposition + pos_vDnaMethylMap[0].mate_real_len;
 					else
 						pos_first_end_coordinate = pos_vDnaMethylMap[0].position + pos_vDnaMethylMap[0].real_len;
@@ -516,12 +517,11 @@ void paiedend_methyhaplo(bool bamformat,char* Align_fileName,char* Output_Name)
 						pos_vDnaMethylMap.pop_front();
 						if(pos_vDnaMethylMap.size()<=0) break;
 						pos_first_start_coordinate = pos_vDnaMethylMap[0].position;
-					if(strcmp(pos_vDnaMethylMap[0].matechrom, "=") == 0)
+					if(strcmp(pos_vDnaMethylMap[0].matechrom, "=") == 0 && pos_vDnaMethylMap[0].span <=maxIS && pos_vDnaMethylMap[0].span>=minIS )
 						pos_first_end_coordinate   = pos_vDnaMethylMap[0].mateposition + pos_vDnaMethylMap[0].mate_real_len;
 					else
 						pos_first_end_coordinate = pos_vDnaMethylMap[0].position + pos_vDnaMethylMap[0].real_len;
-					
-					}
+                    }
                     if( (pos_vDnaMethylMap.size() <=1 || now_chr!=old_chr) && pos_print==1) 
                     {
                         fprintf(pos_OUTFILE,"******\n");
@@ -558,7 +558,7 @@ void paiedend_methyhaplo(bool bamformat,char* Align_fileName,char* Output_Name)
                     //add new reads
                     if(neg_first_start_coordinate==-1 || neg_first_end_coordinate==-1) {
                         neg_first_start_coordinate = read.position;
-			if(strcmp(read.matechrom, "=") == 0)
+			if(strcmp(read.matechrom, "=") == 0 && read.span <=maxIS && read.span>=minIS)
                         	neg_first_end_coordinate   = read.mateposition + read_valid_len;
 			else neg_first_end_coordinate   = read.position + read_valid_len;
                     }
@@ -579,7 +579,7 @@ void paiedend_methyhaplo(bool bamformat,char* Align_fileName,char* Output_Name)
 	            	Neg_vDnaMethylMap.pop_front();
 	            	if(Neg_vDnaMethylMap.size()<=0) break;
 				    neg_first_start_coordinate = Neg_vDnaMethylMap[0].position;
-				    if(strcmp(Neg_vDnaMethylMap[0].matechrom, "=") == 0)
+				    if(strcmp(Neg_vDnaMethylMap[0].matechrom, "=") == 0 && Neg_vDnaMethylMap[0].span <=maxIS && Neg_vDnaMethylMap[0].span>=minIS )
     				        neg_first_end_coordinate   = Neg_vDnaMethylMap[0].mateposition + Neg_vDnaMethylMap[0].mate_real_len;
 				    else
 					neg_first_end_coordinate   = Neg_vDnaMethylMap[0].position + Neg_vDnaMethylMap[0].real_len;
@@ -588,7 +588,7 @@ void paiedend_methyhaplo(bool bamformat,char* Align_fileName,char* Output_Name)
 			        	Neg_vDnaMethylMap.pop_front();
 			        	if(Neg_vDnaMethylMap.size()<=0) break;
 				        neg_first_start_coordinate = Neg_vDnaMethylMap[0].position;
-					if(strcmp(Neg_vDnaMethylMap[0].matechrom, "=") == 0)
+					if(strcmp(Neg_vDnaMethylMap[0].matechrom, "=") == 0 && Neg_vDnaMethylMap[0].span <=maxIS && Neg_vDnaMethylMap[0].span>=minIS )
 				            neg_first_end_coordinate   = Neg_vDnaMethylMap[0].mateposition + Neg_vDnaMethylMap[0].mate_real_len;
 					else
 					    neg_first_end_coordinate   = Neg_vDnaMethylMap[0].position + Neg_vDnaMethylMap[0].real_len;
@@ -643,7 +643,7 @@ void paiedend_methyhaplo(bool bamformat,char* Align_fileName,char* Output_Name)
                         pos_validCs.pop_front();
 
 					pos_first_start_coordinate = read.position;
-					if(read.flag & 0x2 && strcmp(read.matechrom, "=") == 0) pos_first_end_coordinate   = read.mateposition + read_valid_len;
+					if(read.flag & 0x2 && strcmp(read.matechrom, "=") == 0 && read.span <=maxIS && read.span>=minIS ) pos_first_end_coordinate   = read.mateposition + read_valid_len;
 					else pos_first_end_coordinate   = read.position + read_valid_len;
 					//read.strand='+';
 					pos_vDnaMethylMap.push_back(read);
@@ -674,7 +674,7 @@ void paiedend_methyhaplo(bool bamformat,char* Align_fileName,char* Output_Name)
                         Neg_validCs.pop_front();
 	            			
 					neg_first_start_coordinate = read.position;
-					if(read.flag & 0x2 && strcmp(read.matechrom, "=") == 0) neg_first_end_coordinate = read.mateposition + read_valid_len;
+					if(read.flag & 0x2 && strcmp(read.matechrom, "=") == 0 && read.span <=maxIS && read.span>=minIS ) neg_first_end_coordinate = read.mateposition + read_valid_len;
 					else neg_first_end_coordinate = read.position + read_valid_len;
 					//read.strand='-';
                     for (map<string, alignedread>::iterator l_it=neg_readDB.begin(); l_it!=neg_readDB.end(); /*i++*/){
@@ -692,7 +692,8 @@ void paiedend_methyhaplo(bool bamformat,char* Align_fileName,char* Output_Name)
 	Show_Progress_float(nReads);
 	//sam done!
 	//foreach the last  +strand
-    
+
+    printf("\ncoord: %d %d %d ||size: %d %d ||readpos: %d %d ||DB: %d %d %d %d\n", pos_processed_coordinate, pos_first_end_coordinate, neg_first_end_coordinate, pos_vDnaMethylMap.size(), Neg_vDnaMethylMap.size(), read.position, read.flag, pos_readDB.size(), neg_readDB.size(), pos_smallerrightpos, neg_smallerrightpos);
     for (map<string, alignedread>::iterator l_it=pos_readDB.begin(); l_it!=pos_readDB.end(); /*i++*/){
         pos_vDnaMethylMap.push_back(l_it->second);
         map<string, alignedread>::iterator iterTemp = l_it;
@@ -703,7 +704,7 @@ void paiedend_methyhaplo(bool bamformat,char* Align_fileName,char* Output_Name)
     //sort(pos_vDnaMethylMap.begin(), pos_vDnaMethylMap.end());
     int lastpos;alignedread pa;
     if(pos_vDnaMethylMap.size()>0) pa = pos_vDnaMethylMap.back();
-    if(strcmp(pa.matechrom, "=") != 0) lastpos = pa.position + pa.real_len;
+    if(strcmp(pa.matechrom, "=") != 0 && pa.span <=maxIS && pa.span>=minIS ) lastpos = pa.position + pa.real_len;
     else lastpos = pa.mateposition + pa.mate_real_len;
     
     while(chromMeths[H].PlusHeterMeths.size() > 0 && lastpos >= chromMeths[H].PlusHeterMeths[0] ){
@@ -725,7 +726,7 @@ void paiedend_methyhaplo(bool bamformat,char* Align_fileName,char* Output_Name)
 	    pos_vDnaMethylMap.pop_front();    
 	    if(pos_vDnaMethylMap.size()<=0) break;
 	    pos_first_start_coordinate = pos_vDnaMethylMap[0].position;
-	    if(strcmp(pos_vDnaMethylMap[0].matechrom, "=") == 0)
+	    if(strcmp(pos_vDnaMethylMap[0].matechrom, "=") == 0 && pos_vDnaMethylMap[0].span <=maxIS && pos_vDnaMethylMap[0].span>=minIS )
 	        pos_first_end_coordinate   = pos_vDnaMethylMap[0].mateposition + pos_vDnaMethylMap[0].mate_real_len;
 	    else
 		pos_first_end_coordinate   = pos_vDnaMethylMap[0].position + pos_vDnaMethylMap[0].real_len;
@@ -735,7 +736,7 @@ void paiedend_methyhaplo(bool bamformat,char* Align_fileName,char* Output_Name)
 	    	pos_vDnaMethylMap.pop_front();
 	    	if(pos_vDnaMethylMap.size()<=0) break;
 	    	pos_first_start_coordinate = pos_vDnaMethylMap[0].position;
-		if(strcmp(pos_vDnaMethylMap[0].matechrom, "=") == 0)
+		if(strcmp(pos_vDnaMethylMap[0].matechrom, "=") == 0 && pos_vDnaMethylMap[0].span <=maxIS && pos_vDnaMethylMap[0].span>=minIS )
 	    	    pos_first_end_coordinate   = pos_vDnaMethylMap[0].mateposition + pos_vDnaMethylMap[0].mate_real_len;
 		else
 		    pos_first_end_coordinate   = pos_vDnaMethylMap[0].position + pos_vDnaMethylMap[0].real_len;
@@ -758,7 +759,7 @@ void paiedend_methyhaplo(bool bamformat,char* Align_fileName,char* Output_Name)
     sortdequebyvec(Neg_vDnaMethylMap);
 //    sort(Neg_vDnaMethylMap.begin(), Neg_vDnaMethylMap.end());
     if(Neg_vDnaMethylMap.size()>0) na = Neg_vDnaMethylMap.back();
-    if(strcmp(na.matechrom, "=") != 0) nlastpos = na.position + na.real_len;
+    if(strcmp(na.matechrom, "=") != 0 && na.span <=maxIS && na.span>=minIS ) nlastpos = na.position + na.real_len;
     else nlastpos = na.mateposition + na.mate_real_len;
     while(chromMeths[H].NegHeterMeths.size() > 0 && nlastpos >= chromMeths[H].NegHeterMeths[0]){
         if(Neg_validCs.size()==0 || (Neg_validCs.back() < chromMeths[H].NegHeterMeths[0]))
@@ -777,7 +778,7 @@ void paiedend_methyhaplo(bool bamformat,char* Align_fileName,char* Output_Name)
         Neg_vDnaMethylMap.pop_front();
         if(Neg_vDnaMethylMap.size()<=0) break;
 		neg_first_start_coordinate = Neg_vDnaMethylMap[0].position;
-		if(strcmp(Neg_vDnaMethylMap[0].matechrom, "=") == 0)
+		if(strcmp(Neg_vDnaMethylMap[0].matechrom, "=") == 0 && Neg_vDnaMethylMap[0].span <=maxIS && Neg_vDnaMethylMap[0].span>=minIS )
 		    neg_first_end_coordinate   = Neg_vDnaMethylMap[0].mateposition + Neg_vDnaMethylMap[0].mate_real_len;
 		else
 		    neg_first_end_coordinate   = Neg_vDnaMethylMap[0].position + Neg_vDnaMethylMap[0].real_len;
@@ -786,7 +787,7 @@ void paiedend_methyhaplo(bool bamformat,char* Align_fileName,char* Output_Name)
 			Neg_vDnaMethylMap.pop_front();
 			if(Neg_vDnaMethylMap.size()<=0) break;
 		    neg_first_start_coordinate = Neg_vDnaMethylMap[0].position;
-		    if(strcmp(Neg_vDnaMethylMap[0].matechrom, "=") == 0)
+		    if(strcmp(Neg_vDnaMethylMap[0].matechrom, "=") == 0 && Neg_vDnaMethylMap[0].span <=maxIS && Neg_vDnaMethylMap[0].span>=minIS )
 		        neg_first_end_coordinate   = Neg_vDnaMethylMap[0].mateposition + Neg_vDnaMethylMap[0].mate_real_len;
 		    else
 			neg_first_end_coordinate   = Neg_vDnaMethylMap[0].position + Neg_vDnaMethylMap[0].real_len;
@@ -990,7 +991,7 @@ int processbamread(const bam_header_t *header, const bam1_t *b, char* readid,int
 //processed one reads of sam file while with heter SNPs
 void processOneRead_heterSNPs_paired(char strand,vector<Pvals> &Pvalues,deque<heterSNP>& HeterSNPs,deque<alignedread> & vDnaMethylMap, int & processed_coordinate, deque<int> & validCs, int& isprint, FILE* OUTFILE) 
 {
-
+    if(validCs.size() + HeterSNPs.size() <=1) return;
     if(validCs.size()>0){
         while(HeterSNPs.size() > 0 && validCs[0] > HeterSNPs[0].pos)
             HeterSNPs.pop_front();  
@@ -1005,12 +1006,12 @@ void processOneRead_heterSNPs_paired(char strand,vector<Pvals> &Pvalues,deque<he
             validCs.push_back(HeterSNPs[i].pos);
     }
 
-    sort(validCs.begin(), validCs.end() );
-
     if(validCs.size() <= 1) {
         return;
     }
     
+    sort(validCs.begin(), validCs.end() );
+
     char* chrom = vDnaMethylMap[0].chrom;
 
     int nStat = 4;int nStatSNP=37;
@@ -1031,7 +1032,7 @@ void processOneRead_heterSNPs_paired(char strand,vector<Pvals> &Pvalues,deque<he
         for(int i=0; i < validCs.size()-1; i++) {
         	int coordinate1 = validCs[i];
             int coordinate2 = validCs[i+1];
-            
+
             pairedState=0;
             if(HeterSNPs.size() > processed_snp_validC)
             {
@@ -1057,12 +1058,19 @@ void processOneRead_heterSNPs_paired(char strand,vector<Pvals> &Pvalues,deque<he
                 if(strcmp(read.matechrom, "=")==0){
                     if(coordinate1 > read.position + read.real_len && coordinate1 < read.mateposition)
                         continue;
+                    // ---left--- coordinate2 ---right---
+                    //Originally coordinate 2++, but in this way, the next run will start from coordinate 2, skipping the effective site in the middle, which is inappropriate.
+                    //Now the code is not very suitable, skipping some reads shown above.
+                    /*
                     while(read.mateposition > coordinate2 && read.position + read.real_len < coordinate2) {
                         if(i < validCs.size()-pos2i) {
                             coordinate2 = validCs[i+pos2i];
                             pos2i++;
                         }else break;
                     }
+                    */
+                    if(read.mateposition > coordinate2 && read.position + read.real_len < coordinate2)
+                        continue;
 
                 }
                 int index1;

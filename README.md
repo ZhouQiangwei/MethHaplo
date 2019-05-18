@@ -32,6 +32,7 @@ You can download the test data on
 
 ### Usage
 1. MethyHaplo command
+```
         Methyhaplo: Combining Allele-specific DNA Methylation and SNPs for Haplotype Assembly
         Usage: methyhaplo -M [mode] -a Y -m methfile -s <sam>/-b <bam> -o outputprefix
         Options:
@@ -62,6 +63,7 @@ You can download the test data on
            -p, --parallel <int>          Change the number of sorts run concurrently to <int>
            -t, --temporary-directory     Use a directory other than /tmp as the temporary directory for sorting.
            -h, -?, --help                This help message.
+```
 
 2. Allele-specific DNA methylation region visulization
 ```bash

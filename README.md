@@ -71,7 +71,7 @@ python methpoint.py chr18_26621440_26621650.md.sort.bam chr18:26621570-26621650 
 ```
 
 <p align="center">
-        <img src="scripts/asmexample.png" alt="asmexample"  width="600" height="500">
+        <img src="scripts/asmexample.png" alt="asmexample"  width="600" height="350">
 </p>
 
 

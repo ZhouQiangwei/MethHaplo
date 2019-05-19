@@ -31,7 +31,7 @@ d) The binary of MethyHaplo will be created in current folder
 You can download the test data on 
 
 ### Usage
-1. MethyHaplo command
+#### 1. MethyHaplo command
 ```
         MethyHaplo: Combining Allele-specific DNA Methylation and SNPs for Haplotype Assembly
         Usage: methyhaplo -M [mode] -a Y -m methfile -s <sam>/-b <bam> -o outputprefix
@@ -65,7 +65,7 @@ You can download the test data on
            -h, -?, --help                This help message.
 ```
 
-2. Allele-specific DNA methylation region visualization
+#### 2. Allele-specific DNA methylation region visualization
 ```bash
 python methpoint.py align.md.sort.bam chrom:start-end strand outputprefix visulsort
 
@@ -82,9 +82,10 @@ python methpoint.py align.md.sort.bam chrom:start-end strand outputprefix visuls
 
     The figure above represents the distribution of methylation sites in raw reads, orange represents methylation sites, green represents unmethylation sites, and blue represents mutation base information. The following figure shows DNA methylation sites and methylation levels.
 
-3. Aellele-specific DNA methylation Sites distribution across TSS/TES etc.
+#### 3. Aellele-specific DNA methylation Sites distribution across TSS/TES etc.
 
-    3.1 Caculate coverage across TSS/TES sites.
+##### 3.1 Caculate coverage across TSS/TES sites.
+
 ```bash
 ASManno [options] -o <OUT_PREFIX> -G GENOME -gff <GFF file>/-gtf <GTF file>/-b <bed file> -ap <asm plus file> -an <asm neg file>
 Usage:
@@ -103,7 +104,8 @@ Usage:
 	-h|--help
 ```
 
-    3.2 Visualization
+##### 3.2 Visualization
+
 ```bash
 python methylevel.py Num Input1.Methylevel.1.txt [Input2 ...] lable outprefix
 ```

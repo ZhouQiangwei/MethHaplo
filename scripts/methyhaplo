@@ -25,7 +25,7 @@ sub error
         croak @msg;
     }
     die
-        "Methyhaplo: Combining Allele-specific DNA Methylation and SNPs for Haplotype Assembly\n",
+        "MethyHaplo: Combining Allele-specific DNA Methylation and SNPs for Haplotype Assembly\n",
         "Usage: methyhaplo -M [mode] -a Y -m methfile -s <sam>/-b <bam> -o outputprefix\n",
         "Options:\n",
         "   -M <string> [hap|asm]         methyhaolo analysis mode\n",

@@ -1,8 +1,8 @@
-## Methyhaplo: Combining Allele-specific DNA Methylation and SNPs for Haplotype Assembly
+## MethyHaplo: Combining Allele-specific DNA Methylation and SNPs for Haplotype Assembly
 
-DNA methylation is an important epigenetic modification that plays a critical role in most eukaryotic organisms. Parental alleles in haploids may exhibit different methylation patterns, which can lead to different phenotypes, and even different therapeutic and drug responses to diseases. However, there is currently no suitable software to obtain accurate DNA methylation haplotype results to our knowledge. To address this issue, we developed a new method, Methyhaplo, for haplotype assembly with allele-specific DNA methylation and SNPs from whole-genome bisulfite sequencing (WGBS) data. Our results showed that the haplotype assembly with allele-specific DNA methylation and SNPs was ten times longer than that with just SNPs. Moreover, Methyhaplo could integrate WGBS-Seq and Hi-C to obtain the better haplotype results. 
+DNA methylation is an important epigenetic modification that plays a critical role in most eukaryotic organisms. Parental alleles in haploids may exhibit different methylation patterns, which can lead to different phenotypes, and even different therapeutic and drug responses to diseases. However, there is currently no suitable software to obtain accurate DNA methylation haplotype results to our knowledge. To address this issue, we developed a new method, MethyHaplo, for haplotype assembly with allele-specific DNA methylation and SNPs from whole-genome bisulfite sequencing (WGBS) data. Our results showed that the haplotype assembly with allele-specific DNA methylation and SNPs was ten times longer than that with just SNPs. Moreover, MethyHaplo could integrate WGBS-Seq and Hi-C to obtain the better haplotype results. 
 
-## This is a README file for the usage of Methyhaplo.
+## This is a README file for the usage of MethyHaplo.
 ------
 
 ## REQUIREMENTS
@@ -14,18 +14,18 @@ DNA methylation is an important epigenetic modification that plays a critical ro
 ## INSTALL
 ------
 a) Download
-`git clone https://github.com/ZhouQiangwei/Methyhaplo.git`
+`git clone https://github.com/ZhouQiangwei/MethyHaplo.git`
 
-b) Change directory into the top directory of Methyhaplo
-`cd Methyhaplo`
+b) Change directory into the top directory of MethyHaplo
+`cd MethyHaplo`
 
 c) Type
 - make
 - make install
 
-d) The binary of Methyhaplo will be created in current folder
+d) The binary of MethyHaplo will be created in current folder
 
-## USAGE of Methyhaplo
+## USAGE of MethyHaplo
 ------
 ### Example data
 You can download the test data on 
@@ -33,7 +33,7 @@ You can download the test data on
 ### Usage
 1. MethyHaplo command
 ```
-        Methyhaplo: Combining Allele-specific DNA Methylation and SNPs for Haplotype Assembly
+        MethyHaplo: Combining Allele-specific DNA Methylation and SNPs for Haplotype Assembly
         Usage: methyhaplo -M [mode] -a Y -m methfile -s <sam>/-b <bam> -o outputprefix
         Options:
            -M <string> [hap|asm]         methyhaolo analysis mode
@@ -65,14 +65,54 @@ You can download the test data on
            -h, -?, --help                This help message.
 ```
 
-2. Allele-specific DNA methylation region visulization
+2. Allele-specific DNA methylation region visualization
 ```bash
-python methpoint.py chr18_26621440_26621650.md.sort.bam chr18:26621570-26621650 . chr18_26621570_26621650.UM 0
+python methpoint.py align.md.sort.bam chrom:start-end strand outputprefix visulsort
+
+        [align.md.sort.bam] BS-Seq alignment file for visualization.
+        [chrom:start-end] The region in chromosome:start-end for visualization.
+        [strand] visualization strand. [+/-/.]
+        [outputprefix] output file prefix
+        [visulsort] Methylation and Unmethylation position in the figure. [0/1]
 ```
 
 <p align="center">
         <img src="scripts/asmexample.png" alt="asmexample"  width="600" height="350">
 </p>
+
+The figure above represents the distribution of methylation sites in raw reads, orange represents methylation sites, green represents unmethylation sites, and blue represents mutation base information. The following figure shows DNA methylation sites and methylation levels.
+
+3. Aellele-specific DNA methylation Sites distribution across TSS/TES etc.
+
+3.1 Caculate coverage across TSS/TES sites.
+```bash
+ASManno [options] -o <OUT_PREFIX> -G GENOME -gff <GFF file>/-gtf <GTF file>/-b <bed file> -ap <asm plus file> -an <asm neg file>
+Usage:
+	-o|--out         Output file prefix
+	-G|--genome      Genome
+	-ap|--asmplus    ASM plus file.
+	-an|--asmneg     ASM neg file.
+	-p|--pvale       Pvalue cutoff. default: 0.01
+	-gtf|-gff        Gtf/gff file
+	-b|--BED         Bed file, chrom start end (strand, .bed4 format)
+	--ped            loci file, chrom start (strand, .ped3 format)
+	-d|--distance    ASM distributions in body and <INT>-bp flanking sequences. The distance of upstream and downstream. default:2000
+	-B|--body        For different analysis input format, gene/TEs body methylation level. [Different Methylation Gene(DMG/DMT...)]
+	-P|--promoter    For different analysis input format.[Different Methylation Promoter(DMP)]
+	-s|--step        Gene body and their flanking sequences using an overlapping sliding window of 5% of the sequence length at a step of 0.8% of the sequence length. So default step: 0.008 (0.8%)
+	-h|--help
+```
+
+3.2 Visulization
+```bash
+python methylevel.py Num Input1.Methylevel.1.txt [Input2 ...] lable outprefix
+```
+<p align="center">
+        <img src="scripts/asmsites.png" alt="asmsite"  width="300" height="300">
+</p>
+
+
+
 
 
 

@@ -65,7 +65,7 @@ int main(int argc, char* argv[])
 {
 	time_t Start_Time,End_Time;
 	printf("\nMethyhaplo: ASManno v1.0\n");
-	const char* Help_String="Command Format : ASManno [options] -o <OUT_PREFIX> -G GENOME -gff <GFF file>/-gtf <GTF file>/-b <bed file> -ap <asm plus file> -an <asm neg file> [-B] [-P]\n"
+	const char* Help_String="Command Format : ASManno [options] -o <OUT_PREFIX> -G GENOME -gff <GFF file>/-gtf <GTF file>/-b <bed file> -ap <asm plus file> -an <asm neg file>\n"
 		"\nUsage:\n"
 		"\t-o|--out         Output file prefix\n"
 		"\t-G|--genome      Genome\n"
@@ -76,8 +76,8 @@ int main(int argc, char* argv[])
 		"\t-b|--BED         Bed file, chrom start end (strand, .bed4 format)\n"
                 "\t--ped            loci file, chrom start (strand, .ped3 format)\n"
 		"\t-d|--distance    ASM distributions in body and <INT>-bp flanking sequences. The distance of upstream and downstream. default:2000\n"
-		"\t-B|--body        For different analysis input format, gene/TEs body methylation level. [Different Methylation Gene(DMG/DMT...)]\n"
-		"\t-P|--promoter    For different analysis input format.[Different Methylation Promoter(DMP)]\n"
+//		"\t-B|--body        For different analysis input format, gene/TEs body methylation level. [Different Methylation Gene(DMG/DMT...)]\n"
+//		"\t-P|--promoter    For different analysis input format.[Different Methylation Promoter(DMP)]\n"
 	//	"\t--TSS            Caculate heatmap for TSS. [Outfile: outPrefix.TSS.cg.n.txt]\n"
 	//	"\t--TTS            Caculate heatmap for TTS. [Outfile: outPrefix.TTS.cg.n.txt] \n"
 	//	"\t--GENE           Caculate heatmap for GENE and flank 2k. [Outfile: outPrefix.GENE.cg.n.txt] \n"

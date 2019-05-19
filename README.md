@@ -80,11 +80,11 @@ python methpoint.py align.md.sort.bam chrom:start-end strand outputprefix visuls
         <img src="scripts/asmexample.png" alt="asmexample"  width="600" height="350">
 </p>
 
-The figure above represents the distribution of methylation sites in raw reads, orange represents methylation sites, green represents unmethylation sites, and blue represents mutation base information. The following figure shows DNA methylation sites and methylation levels.
+  The figure above represents the distribution of methylation sites in raw reads, orange represents methylation sites, green represents unmethylation sites, and blue represents mutation base information. The following figure shows DNA methylation sites and methylation levels.
 
 3. Aellele-specific DNA methylation Sites distribution across TSS/TES etc.
 
-3.1 Caculate coverage across TSS/TES sites.
+  3.1 Caculate coverage across TSS/TES sites.
 ```bash
 ASManno [options] -o <OUT_PREFIX> -G GENOME -gff <GFF file>/-gtf <GTF file>/-b <bed file> -ap <asm plus file> -an <asm neg file>
 Usage:
@@ -103,12 +103,12 @@ Usage:
 	-h|--help
 ```
 
-3.2 Visulization
+  3.2 Visualization
 ```bash
 python methylevel.py Num Input1.Methylevel.1.txt [Input2 ...] lable outprefix
 ```
 <p align="center">
-        <img src="scripts/asmsites.png" alt="asmsite"  width="300" height="300">
+        <img src="scripts/asmsites.png" alt="asmsite"  width="500" height="300">
 </p>
 
 

@@ -77,10 +77,10 @@ python methpoint.py align.md.sort.bam chrom:start-end strand outputprefix visuls
 ```
 
 <p align="center">
-        <img src="scripts/asmexample.png" alt="asmexample"  width="600" height="350">
+        <img src="scripts/asmexample.png" alt="asmexample"  width="550" height="350">
 </p>
 
-    The figure above represents the distribution of methylation sites in raw reads, orange represents methylation sites, green represents unmethylation sites, and blue represents mutation base information. The following figure shows DNA methylation sites and methylation levels.
+The figure above represents the distribution of methylation sites in raw reads, orange represents methylation sites, green represents unmethylation sites, and blue represents mutation base information. The following figure shows DNA methylation sites and methylation levels.
 
 #### 3. Aellele-specific DNA methylation Sites distribution across TSS/TES etc.
 

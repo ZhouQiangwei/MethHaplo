@@ -27,6 +27,7 @@
 int MISSING_QV = 0;
 int MINQ = 13; // minimum base quality
 int MIN_MQ = 20; // minimum read mapping quality
+int Strand = 0; //all strand
 int MAX_IS = 1000; // maximum insert size
 int MIN_IS = 0; // maximum insert size
 int PEONLY = 0; // if this is set to 1, reads for which only one end is mapped are not considered for hairs
@@ -88,6 +89,7 @@ void print_options() {
     fprintf(stderr, "--qvoffset <33/64> : quality value offset, 33/64 depending on how quality values were encoded, default is 33 \n");
     fprintf(stderr, "--mbq <INT> : minimum base quality to consider a base for haplotype fragment, default 13\n");
     fprintf(stderr, "--mmq <INT> : minimum read mapping quality to consider a read for phasing, default 20\n");
+    fprintf(stderr, "--strand <INT> : strand for process, default 0; 1, for plus strand; 2, for neg strand;\n");
     fprintf(stderr, "--realign_variants <0/1> : Perform sensitive realignment and scoring of variants.\n");
     fprintf(stderr, "--hic <0/1> : sets default maxIS to 40MB, prints matrix in new HiC format\n");
     fprintf(stderr, "--10X <0/1> : 10X reads. NOTE: Output fragments MUST be processed with LinkReads.py script after extractHAIRS to work with HapCUT2.\n");
@@ -147,7 +149,18 @@ int parse_bamfile_sorted(char* bamfile, HASHTABLE* ht, CHROMVARS* chromvars, VAR
 
     while (samread(fp, b) >= 0) {
         fetch_func(b, fp, read);
-        if ((read->flag & (BAM_FUNMAP | BAM_FSECONDARY | BAM_FQCFAIL | BAM_FDUP)) || read->mquality < MIN_MQ) {
+        if ((read->flag & (BAM_FUNMAP | BAM_FSECONDARY | BAM_FQCFAIL | BAM_FDUP)) || read->mquality < MIN_MQ)
+        {
+            free_readmemory(read);
+            continue;
+        }
+        if(Strand == 1 && !( (!(read->flag & 0x2) && !(read->flag & 0x10) ) \
+		|| ( (read->flag & 0x2) && ( ((read->flag & 0x40) && (read->flag & 0x20)) || ((read->flag & 0x80) && (read->flag & 0x10 ))) ) ) ){
+            free_readmemory(read);
+            continue;
+        }
+        if(Strand == 2 && !( (!(read->flag & 0x2) && (read->flag & 0x10) ) || \
+		( (read->flag & 0x2) && ( ((read->flag & 0x40) && (read->flag & 0x10)) || ((read->flag & 0x80) && (read->flag & 0x20 ))) ) ) ){
             free_readmemory(read);
             continue;
         }
@@ -288,6 +301,7 @@ int main(int argc, char** argv) {
         }
         else if (strcmp(argv[i], "--mbq") == 0) MINQ = atoi(argv[i + 1]);
         else if (strcmp(argv[i], "--mmq") == 0) MIN_MQ = atoi(argv[i + 1]);
+        else if (strcmp(argv[i], "--strand") == 0) Strand = atoi(argv[i + 1]);
         else if (strcmp(argv[i], "--HiC") == 0 || strcmp(argv[i], "--hic") == 0){
             check_input_0_or_1(argv[i + 1]);
             if (atoi(argv[i + 1])){

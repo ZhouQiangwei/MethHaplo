@@ -172,21 +172,17 @@ sub runmain
         if ( exists($$opts{vcffile}) )
         {
             print("[Methyhaplo] process methfile and vcf file!\n");
-            $cmd = "awk -v m=$nmeth -v n=$ncover -v f=$Mfloat -v context=$context " . '-v OFS="\t" \'($4==context || context == "ALL") && $6>=n && ($7>=f && $7<=1-f){if($3=="+"){print $1,$2,".\tC\tT\t600\tPASS\t.\tGT\t0/1" ' . " >> \" $$opts{methfile}.p \" " . ' }else{print $1,$2,".\tG\tA\t600\tPASS\t.\tGT\t0/1" ' . ">> \" $$opts{methfile}.n\" " . '} }\' ' . " $$opts{methfile}" ;
+            $cmd = "awk -v m=$nmeth -v n=$ncover -v f=$Mfloat -v context=$context " . '-v OFS="\t" \'$3=="+" && ($4==context || context == "ALL") && $6>=n && ($7>=f && $7<=1-f){print $1,$2,".\tC\tT\t600\tPASS\t.\tGT\t0/1"}\' ' . "$$opts{methfile} | cat $$opts{vcffile}  - | $path_curf -d > $$opts{methfile}.mrsnp.p";
             system($cmd) == 0 or die "failed: $!";
-            $cmd = "cat $$opts{vcffile} $$opts{methfile}.p | $path_curf -d > $$opts{methfile}.mrsnp.p";
+            $cmd = "awk -v m=$nmeth -v n=$ncover -v f=$Mfloat -v context=$context " . '-v OFS="\t" \'$3=="-" && ($4==context || context == "ALL") && $6>=n && ($7>=f && $7<=1-f){print $1,$2,".\tG\tA\t600\tPASS\t.\tGT\t0/1"}\' ' . "$$opts{methfile} | cat $$opts{vcffile} - | $path_curf -d > $$opts{methfile}.mrsnp.n";
             system($cmd) == 0 or die "failed: $!";
-            $cmd = "cat $$opts{vcffile} $$opts{methfile}.n | $path_curf -d > $$opts{methfile}.mrsnp.n";
-            system($cmd) == 0 or die "failed: $!";
-            $cmd="rm $$opts{methfile}.p && rm $$opts{methfile}.n";
-            system($cmd) == 0 or die "failed: $!"; 
-            #$cmd = "awk -v m=$nmeth -v n=$ncover -v f=$Mfloat -v context=$context " . '-v OFS="\t" \'$3=="+" && ($4==context || context == "ALL") && $6>=n && ($7>=f && $7<=1-f){print $1,$2,".\tC\tT\t600\tPASS\t.\tGT\t0/1"}\' ' . "$$opts{methfile} | cat $$opts{vcffile}  - | $path_curf -d > $$opts{methfile}.mrsnp.p";
-            #$cmd = "awk -v m=$nmeth -v n=$ncover -v f=$Mfloat -v context=$context " . '-v OFS="\t" \'$3=="-" && ($4==context || context == "ALL") && $6>=n && ($7>=f && $7<=1-f){print $1,$2,".\tG\tA\t600\tPASS\t.\tGT\t0/1"}\' ' . "$$opts{methfile} | cat $$opts{vcffile} - | $path_curf -d > $$opts{methfile}.mrsnp.n";
             $varfilep = "$$opts{methfile}.mrsnp.p";
             $varfilen = "$$opts{methfile}.mrsnp.n";
         }else
         {
-            $cmd = "awk -v m=$nmeth -v n=$ncover -v f=$Mfloat -v context=$context " . '-v OFS="\t" \'($4==context || context == "ALL") && $6>=n && ($7>=f && $7<=1-f){if($3=="+"){print $1,$2,".\tC\tT\t600\tPASS\t.\tGT\t0/1" ' . " >> \" $$opts{methfile}.p \" " . ' }else{print $1,$2,".\tG\tA\t600\tPASS\t.\tGT\t0/1" ' . ">> \" $$opts{methfile}.n\" " . '} }\' ' . " $$opts{methfile}" ;
+            $cmd = "awk -v m=$nmeth -v n=$ncover -v f=$Mfloat -v context=$context " . '-v OFS="\t" \'$3=="+" && ($4==context || context == "ALL") && $6>=n && ($7>=f && $7<=1-f){print $1,$2,".\tC\tT\t600\tPASS\t.\tGT\t0/1"}\' ' . "$$opts{methfile} > $$opts{methfile}.p";
+            system($cmd) == 0 or die "failed: $!";
+            $cmd = "awk -v m=$nmeth -v n=$ncover -v f=$Mfloat -v context=$context " . '-v OFS="\t" \'$3=="-" && ($4==context || context == "ALL") && $6>=n && ($7>=f && $7<=1-f){print $1,$2,".\tG\tA\t600\tPASS\t.\tGT\t0/1"}\' ' . "$$opts{methfile} > $$opts{methfile}.n";
             system($cmd) == 0 or die "failed: $!";
             $varfilep = "$$opts{methfile}.p";
             $varfilen = "$$opts{methfile}.n";
@@ -194,30 +190,29 @@ sub runmain
         ##done split meth and sort vcf; next, process hap
         my $newFile;
         print("[Methyhaplo] split bamfile by alignment strand!\n");
-        #already add strand to extrathairs
-        #if( exists($$opts{samfile})){
-        #    $cmd = "$dirs/bamStrand $$opts{samfile}";
-        #    $newFile = $$opts{samfile};
-        #    $newFile =~ s/.sam$//;
-        #}elsif( exists($$opts{bamfile})){
-        #    $cmd = "$dirs/bamStrand $$opts{bamfile}";
-        #    $newFile = $$opts{samfile};
-        #    $newFile =~ s/.bam$//;
-        #}else{
-        #    print("Please define alignment file with -s or -b paramater!\n");
-        #    exit(1);
-        #}
-        #system($cmd) == 0 or die "failed: $!";
+        if( exists($$opts{samfile})){
+            $cmd = "$dirs/bamStrand $$opts{samfile}";
+            $newFile = $$opts{samfile};
+            $newFile =~ s/.sam$//;
+        }elsif( exists($$opts{bamfile})){
+            $cmd = "$dirs/bamStrand $$opts{bamfile}";
+            $newFile = $$opts{samfile};
+            $newFile =~ s/.bam$//;
+        }else{
+            print("Please define alignment file with -s or -b paramater!\n");
+            exit(1);
+        }
+        system($cmd) == 0 or die "failed: $!";
 
         print("[Methyhaplo] Haplotype assembly with plus strand DNA methylation information!\n");
         ## plus hap
-        $cmd = "$dirs/extracthairs --strand 1 --bam $newFile.bam --VCF $varfilep --out $$opts{output}.p.fragment --minIS $minIS --maxIS $maxIS --mmq $qual";
+        $cmd = "$dirs/extracthairs --bam $newFile.p.bam --VCF $varfilep --out $$opts{output}.p.fragment --minIS $minIS --maxIS $maxIS --mmq $qual";
         system($cmd) == 0 or die "failed: $!";
         $cmd = "$dirs/hapcut2 --fragments $$opts{output}.p.fragment --vcf $varfilep --output $$opts{output}.p.haplo";
         system($cmd) == 0 or die "failed: $!";
         ## neg 
         print("[Methyhaplo] Haplotype assembly with neg strand DNA methylation information!\n");
-        $cmd = "$dirs/extracthairs --strand 2 --bam $newFile.bam --VCF $varfilen --out $$opts{output}.n.fragment --minIS $minIS --maxIS $maxIS --mmq $qual";
+        $cmd = "$dirs/extracthairs --bam $newFile.n.bam --VCF $varfilen --out $$opts{output}.n.fragment --minIS $minIS --maxIS $maxIS --mmq $qual";
         system($cmd) == 0 or die "failed: $!";
         $cmd = "$dirs/hapcut2 --fragments $$opts{output}.n.fragment --vcf $varfilen --output $$opts{output}.n.haplo";
         system($cmd) == 0 or die "failed: $!";

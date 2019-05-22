@@ -194,14 +194,13 @@ sub runmain
         ##done split meth and sort vcf; next, process hap
         my $newFile;
         print("[Methyhaplo] split bamfile by alignment strand!\n");
+        $newFile = $$opts{samfile};
         #already add strand to extrathairs
         #if( exists($$opts{samfile})){
         #    $cmd = "$dirs/bamStrand $$opts{samfile}";
-        #    $newFile = $$opts{samfile};
         #    $newFile =~ s/.sam$//;
         #}elsif( exists($$opts{bamfile})){
         #    $cmd = "$dirs/bamStrand $$opts{bamfile}";
-        #    $newFile = $$opts{samfile};
         #    $newFile =~ s/.bam$//;
         #}else{
         #    print("Please define alignment file with -s or -b paramater!\n");
@@ -211,13 +210,13 @@ sub runmain
 
         print("[Methyhaplo] Haplotype assembly with plus strand DNA methylation information!\n");
         ## plus hap
-        $cmd = "$dirs/extracthairs --strand 1 --bam $newFile.bam --VCF $varfilep --out $$opts{output}.p.fragment --minIS $minIS --maxIS $maxIS --mmq $qual";
+        $cmd = "$dirs/extracthairs --strand 1 --bam $newFile --VCF $varfilep --out $$opts{output}.p.fragment --minIS $minIS --maxIS $maxIS --mmq $qual";
         system($cmd) == 0 or die "failed: $!";
         $cmd = "$dirs/hapcut2 --fragments $$opts{output}.p.fragment --vcf $varfilep --output $$opts{output}.p.haplo";
         system($cmd) == 0 or die "failed: $!";
         ## neg 
         print("[Methyhaplo] Haplotype assembly with neg strand DNA methylation information!\n");
-        $cmd = "$dirs/extracthairs --strand 2 --bam $newFile.bam --VCF $varfilen --out $$opts{output}.n.fragment --minIS $minIS --maxIS $maxIS --mmq $qual";
+        $cmd = "$dirs/extracthairs --strand 2 --bam $newFile --VCF $varfilen --out $$opts{output}.n.fragment --minIS $minIS --maxIS $maxIS --mmq $qual";
         system($cmd) == 0 or die "failed: $!";
         $cmd = "$dirs/hapcut2 --fragments $$opts{output}.n.fragment --vcf $varfilen --output $$opts{output}.n.haplo";
         system($cmd) == 0 or die "failed: $!";

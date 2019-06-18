@@ -36,33 +36,33 @@ You can download the test data on
         MethyHaplo: Combining Allele-specific DNA Methylation and SNPs for Haplotype Assembly
         Usage: methyhaplo -M [mode] -a Y -m methfile -s <sam>/-b <bam> -o outputprefix
         Options:
-           -M <string> [hap|asm]         methyhaolo analysis mode
-                                             hap: iterative approach, prefer longer haplotype results;
-                                             asm: hypergeometric approach, prefer accurate asm results.(default: hap);
-           -m, --methfile <file>         methratio file (requires)
-                                             format: chr  pos  strand  context  methlevel  methC  coverage
-           -o, --out <string>            output file prefix
-           -s, --sam <samfile>           sam file from batmeth2-align.  This file should be coordinate sorted, 
-                                             using the <samtools sort> command, and must contain methylstatus[MD:Z:].
-           -b, --bam <bamfile>           bam file, should be coordinate sorted. (use this option or -s option but not both)
-           -a <Y/N>                      If bam/sam file contain MD state by batmeth2 calmeth scripts.
-                                             If not, please define genome location by -g paramater.
-           -g, --genome <genome>         If bam/sam file isnot contain MD.
-           -q <int>                      only process reads with mapping quality >= INT [default >= 20].
-           -c, --context                 methylation context process for methyhaplo. CG, CHG, CHH, ALL[default].
-           -C, --NMETH                   Number of methylated reads cover cytosine site. default: 2 [m>=2]
-           -N, --NCOVER                  Number of coverage reads in cytosine site. default: 6 [n >= 6]
-	       -f, --MFloat                  Cutoff of methratio. default: 0.2 [ f =< meth <= 1-f]
-	       --minIS <INT>                 Minimum insert size for a paired-end read to be considered as single fragment for phasing, default 0
-	       --maxIS <INT>                 Maximum insert size for a paired-end read to be considered as a single fragment for phasing, default 1000
-	       --DBtmpsize <INT>             Maximum size of temp read store, default 12000. (only useful in asm mode)
-           --PE                          Paired-end reads.[default:single-end]
-           -v, --vcffile <file>          snp file (optional)
-           -r, --chromosomal-order       Use natural ordering (1,2,10,MT,X) rather then the default (1,10,2,MT,X). 
-                                             This requires new version of the unix \sort\ command which supports the --version-sort option.
-           -p, --parallel <int>          Change the number of sorts run concurrently to <int>
-           -t, --temporary-directory     Use a directory other than /tmp as the temporary directory for sorting.
-           -h, -?, --help                This help message.
+                -M <string> [hap|asm]         methyhaolo analysis mode
+                                                hap: iterative approach, prefer longer haplotype results;
+                                                asm: hypergeometric approach, prefer accurate asm results.(default: hap);
+                -m, --methfile <file>         methratio file (requires)
+                                                format: chr  pos  strand  context  methlevel  methC  coverage
+                -o, --out <string>            output file prefix
+                -s, --sam <samfile>           sam file from batmeth2-align.  This file should be coordinate sorted, 
+                                                using the <samtools sort> command, and must contain methylstatus[MD:Z:].
+                -b, --bam <bamfile>           bam file, should be coordinate sorted. (use this option or -s option but not both)
+                -a <Y/N>                      If bam/sam file contain MD state by batmeth2 calmeth scripts.
+                                                If not, please define genome location by -g paramater.
+                -g, --genome <genome>         If bam/sam file isnot contain MD.
+                -q <int>                      only process reads with mapping quality >= INT [default >= 20].
+                -c, --context                 methylation context process for methyhaplo. CG, CHG, CHH, ALL[default].
+                -C, --NMETH                   Number of methylated reads cover cytosine site. default: 2 [m>=2]
+                -N, --NCOVER                  Number of coverage reads in cytosine site. default: 6 [n >= 6]
+                -f, --MFloat                  Cutoff of methratio. default: 0.2 [ f =< meth <= 1-f]
+                --minIS <INT>                 Minimum insert size for a paired-end read to be considered as single fragment for phasing, default 0
+                --maxIS <INT>                 Maximum insert size for a paired-end read to be considered as a single fragment for phasing, default 1000
+                --DBtmpsize <INT>             Maximum size of temp read store, default 12000. (only useful in asm mode)
+                --PE                          Paired-end reads.[default:single-end]
+                -v, --vcffile <file>          snp file (optional)
+                -r, --chromosomal-order       Use natural ordering (1,2,10,MT,X) rather then the default (1,10,2,MT,X). 
+                                                This requires new version of the unix \sort\ command which supports the --version-sort option.
+                -p, --parallel <int>          Change the number of sorts run concurrently to <int>
+                -t, --temporary-directory     Use a directory other than /tmp as the temporary directory for sorting.
+                -h, -?, --help                This help message.
 ```
 
 #### 2. Allele-specific DNA methylation region visualization
@@ -80,7 +80,7 @@ python methpoint.py align.md.sort.bam chrom:start-end strand outputprefix visuls
         <img src="scripts/asmexample.png" alt="asmexample"  width="550" height="350">
 </p>
 
-The figure above represents the distribution of methylation sites in raw reads, orange represents methylation sites, green represents unmethylation sites, and blue represents mutation base information. The following figure shows DNA methylation sites and methylation levels.
+The figure above represents the distribution of methylation sites in raw reads, orange represents methylation sites, green represents unmethylation sites, and blue represents mutation base information. The bottom figure shows DNA methylation sites and methylation levels.
 
 #### 3. Aellele-specific DNA methylation Sites distribution across TSS/TES etc.
 

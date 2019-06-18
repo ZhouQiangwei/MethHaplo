@@ -172,7 +172,8 @@ sub runmain
         if ( exists($$opts{vcffile}) )
         {
             print("[Methyhaplo] process methfile and vcf file!\n");
-            $cmd = "awk -v m=$nmeth -v n=$ncover -v f=$Mfloat -v context=$context " . '-v OFS="\t" \'($4==context || context == "ALL") && $6>=n && ($7>=f && $7<=1-f){if($3=="+"){print $1,$2,".\tC\tT\t600\tPASS\t.\tGT\t0/1" ' . " >> \"$$opts{methfile}.p\" " . ' }else{print $1,$2,".\tG\tA\t600\tPASS\t.\tGT\t0/1" ' . ">> \"$$opts{methfile}.n\" " . '} }\' ' . " $$opts{methfile}" ;
+            #$cmd = "awk -v m=$nmeth -v n=$ncover -v f=$Mfloat -v context=$context " . '-v OFS="\t" \'($4==context || context == "ALL") && $6>=n && ($7>=f && $7<=1-f){if($3=="+"){print $1,$2,".\tC\tT\t600\tPASS\t.\tGT\t0/1" ' . " >> \"$$opts{methfile}.p\" " . ' }else{print $1,$2,".\tG\tA\t600\tPASS\t.\tGT\t0/1" ' . ">> \"$$opts{methfile}.n\" " . '} }\' ' . " $$opts{methfile}" ;
+            $cmd = "$dirs/splitmr -i $$opts{methfile} -m $nmeth -n $ncover -f $Mfloat -c $context";
             system($cmd) == 0 or die "failed: $!";
             $cmd = "cat $$opts{vcffile} $$opts{methfile}.p | $path_curf -d > $$opts{methfile}.mrsnp.p";
             system($cmd) == 0 or die "failed: $!";
@@ -186,7 +187,8 @@ sub runmain
             $varfilen = "$$opts{methfile}.mrsnp.n";
         }else
         {
-            $cmd = "awk -v m=$nmeth -v n=$ncover -v f=$Mfloat -v context=$context " . '-v OFS="\t" \'($4==context || context == "ALL") && $6>=n && ($7>=f && $7<=1-f){if($3=="+"){print $1,$2,".\tC\tT\t600\tPASS\t.\tGT\t0/1" ' . " >> \"$$opts{methfile}.p\" " . ' }else{print $1,$2,".\tG\tA\t600\tPASS\t.\tGT\t0/1" ' . ">> \"$$opts{methfile}.n\" " . '} }\' ' . " $$opts{methfile}" ;
+            #$cmd = "awk -v m=$nmeth -v n=$ncover -v f=$Mfloat -v context=$context " . '-v OFS="\t" \'($4==context || context == "ALL") && $6>=n && ($7>=f && $7<=1-f){if($3=="+"){print $1,$2,".\tC\tT\t600\tPASS\t.\tGT\t0/1" ' . " >> \"$$opts{methfile}.p\" " . ' }else{print $1,$2,".\tG\tA\t600\tPASS\t.\tGT\t0/1" ' . ">> \"$$opts{methfile}.n\" " . '} }\' ' . " $$opts{methfile}" ;
+            $cmd = "$dirs/splitmr -i $$opts{methfile} -m $nmeth -n $ncover -f $Mfloat -c $context";
             system($cmd) == 0 or die "failed: $!";
             $varfilep = "$$opts{methfile}.p";
             $varfilen = "$$opts{methfile}.n";
@@ -194,7 +196,14 @@ sub runmain
         ##done split meth and sort vcf; next, process hap
         my $newFile;
         print("[Methyhaplo] split bamfile by alignment strand!\n");
-        $newFile = $$opts{samfile};
+        if( exists($$opts{samfile})){
+            $newFile = $$opts{samfile};
+        }elsif( exists($$opts{bamfile})){
+            $newFile = $$opts{bamfile};
+        }else{
+            print("Please define alignment file with -s or -b paramater!\n");
+            exit(1);    
+        }
         #already add strand to extrathairs
         #if( exists($$opts{samfile})){
         #    $cmd = "$dirs/bamStrand $$opts{samfile}";

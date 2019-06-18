@@ -35,7 +35,10 @@ TOCOMPILE_bam2md = $(builddir)/bam2md.o
 TARGET_filgenome = $(srcdir)/filgenome
 TOCOMPILE_filgenome = $(builddir)/filgenome.o
 
-all: ${TOCOMPILE} ${TOCOMPILE_asm} ${TOCOMPILE_asman} ${TOCOMPILE_others} ${TOCOMPILE_homo} ${TOCOMPILE_asmsitesan} ${TOCOMPILE_bsmerge} ${TOCOMPILE_bsmergehic} ${TOCOMPILE_bam2md} ${TOCOMPILE_filgenome}
+TARGET_splitmr = $(srcdir)/splitmr
+TOCOMPILE_splitmr = $(builddir)/splitmr.o
+
+all: ${TOCOMPILE} ${TOCOMPILE_asm} ${TOCOMPILE_asman} ${TOCOMPILE_others} ${TOCOMPILE_homo} ${TOCOMPILE_asmsitesan} ${TOCOMPILE_bsmerge} ${TOCOMPILE_bsmergehic} ${TOCOMPILE_bam2md} ${TOCOMPILE_filgenome} ${TOCOMPILE_splitmr}
 	${CC} $(LDFLAGS) -o $(TARGET_asm) ${TOCOMPILE_asm}
 	${CC} $(LDFLAGS) -o $(TARGET_asman) ${TOCOMPILE_asman}
 	${CC} $(LDFLAGS) -o $(TARGET_asmsitesan) ${TOCOMPILE_asmsitesan}
@@ -46,6 +49,7 @@ all: ${TOCOMPILE} ${TOCOMPILE_asm} ${TOCOMPILE_asman} ${TOCOMPILE_others} ${TOCO
 	${CC} $(LDFLAGS) -o $(TARGET_filgenome) ${TOCOMPILE_filgenome}
 	${CC} $(LDFLAGS) -o $(TARGET_bam2md) ${TOCOMPILE_bam2md} ${LIBS}
 	${CC} $(LDFLAGS) -o $(TARGET) ${TOCOMPILE} ${LIBS}
+	${CC} $(LDFLAGS) -o $(TARGET_splitmr) ${TOCOMPILE_splitmr}
 	cd submodules/HapCUT2 && make
 
 $(TOCOMPILE): $(srcdir)/methyhap.cpp $(srcdir)/methyhap.hpp $(srcdir)/paired.cpp $(srcdir)/paired.hpp $(srcdir)/processPairedBlock.cpp $(srcdir)/processPairedBlock.hpp $(srcdir)/common.hpp $(srcdir)/alignRead.h | $(builddir)
@@ -61,6 +65,9 @@ $(TOCOMPILE_filgenome): $(srcdir)/filgenome.cpp
 
 $(TOCOMPILE_bam2md): $(srcdir)/bam2md.cpp
 	$(CC) -c $(srcdir)/bam2md.cpp -o $(builddir)/bam2md.o
+
+$(TOCOMPILE_splitmr): $(srcdir)/splitmr.cpp
+	$(CC) -c $(srcdir)/splitmr.cpp -o $(builddir)/splitmr.o
 
 $(TOCOMPILE_asman): $(srcdir)/ASManno.cpp
 	$(CC) -c $(srcdir)/ASManno.cpp -o $(builddir)/ASManno.o
@@ -84,7 +91,7 @@ $(TOCOMPILE_bsmergehic): $(srcdir)/bsmergehic.cpp
 	$(CC) ${FLAGS} ${LIBS} -c $(srcdir)/$*.c
 
 clean:
-	rm -f $(builddir)/*.o $(TARGET) $(TARGET_asm) $(TARGET_asman) $(TARGET_homo) $(TARGET_others) $(TARGET_asmsitesan) $(TARGET_bsmerge) $(TARGET_bsmergehic) $(TARGET_bam2md) $(TARGET_filgenome)
+	rm -f $(builddir)/*.o $(TARGET) $(TARGET_asm) $(TARGET_asman) $(TARGET_homo) $(TARGET_others) $(TARGET_asmsitesan) $(TARGET_bsmerge) $(TARGET_bsmergehic) $(TARGET_bam2md) $(TARGET_filgenome) $(TARGET_splitmr)
 	rm -rf submodules/HapCUT2/build/
 	if [ -d "bin" ]; then rm -r bin; fi
 
@@ -104,3 +111,4 @@ install:
 	cp scripts/bamStrand ./bin/
 	cp src/bam2md ./bin/
 	cp src/filgenome ./bin/
+	cp src/splitmr ./bin/

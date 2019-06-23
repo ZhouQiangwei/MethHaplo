@@ -251,6 +251,31 @@ int main(int argc,char *argv[])
 		}
 		Meth_bak=Meth;
 	}
+///////
+	if(continueN>=cutoffNumber)
+        {
+                if(METHYhaplo.size() >= 1)
+                {
+                        std::string meth_state;
+                        if(isSNP)
+                                if(AllSNP)
+                                        meth_state="Hetero";
+                                else
+                                        meth_state="hetero";
+                        else
+                                meth_state="Meth";
+                        fprintf(Outfile,"******span:\t%s\t%d\t%d\t%s:%d\t%d\n",METHYhaplo[0].chrom,METHYhaplo[0].coordinate1,METHYhaplo[METHYhaplo.size()-1].coordinate2,meth_state.c_str(),METHYhaplo[METHYhaplo.size()-1].coordinate2-METHYhaplo[0].coordinate1,continueN);
+                        if(Print_Bed)
+                                        fprintf(Outfile_bed,"%s\t%d\t%d\t%s:%d\t%d\n",METHYhaplo[0].chrom,METHYhaplo[0].coordinate1,METHYhaplo[METHYhaplo.size()-1].coordinate2,meth_state.c_str(),METHYhaplo[METHYhaplo.size()-1].coordinate2-METHYhaplo[0].coordinate1,continueN);
+                }
+                while(METHYhaplo.size()>0)
+                {
+                        fprintf(Outfile,"%s",METHYhaplo[0].s2t.c_str());
+                        METHYhaplo.erase(METHYhaplo.begin());
+                }
+        }
+        METHYhaplo.clear();
+
 	remove(methyhaploIN);
 	printf("Done!\n");
 }

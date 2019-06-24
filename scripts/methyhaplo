@@ -161,9 +161,9 @@ sub runmain
             }
         }
         system($cmd) == 0 or die "failed: $!";
-        $cmd = "$dirs/ASM -i $$opts{output}.plus.txt -o $$opts{output}.asm.plus";
+        $cmd = "$dirs/ASM -i $$opts{output}.plus.txt -o $$opts{output}.asm.plus -b $$opts{output}.asm.plus.bed";
         system($cmd) == 0 or die "failed: $!";
-        $cmd = "$dirs/ASM -i $$opts{output}.neg.txt -o $$opts{output}.asm.neg";
+        $cmd = "$dirs/ASM -i $$opts{output}.neg.txt -o $$opts{output}.asm.neg -b $$opts{output}.asm.neg.bed";
         system($cmd) == 0 or die "failed: $!";
     }else{
         my $varfilep;

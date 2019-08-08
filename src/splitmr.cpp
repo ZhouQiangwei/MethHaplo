@@ -97,9 +97,10 @@ int main(int argc,char *argv[])
         if(nline%1000000 == 0){
             fprintf(stderr, "[MethProcess] Processed %d meth loci", nline);
         }
-        if(ml < weight || ml > hweight) continue;
+        //if(ml < weight || ml > hweight) continue;
         if(meth < mCover) continue;
         if(cover < TotalCover) continue;
+        if(!( ml >= weight && ml <= hweight ) && !(meth>2 && nCover-meth>2) ) continue;
 
 		if(strcmp(Mcontext, "ALL") == 0 || strcmp(Mcontext, context) == 0){
             if(strand == '+'){

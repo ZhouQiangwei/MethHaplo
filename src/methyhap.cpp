@@ -1635,7 +1635,7 @@ int process_meth(char* buffer,int& var_t, char& strand, char* chrom, char* conte
     if( ncover < NCOVER) 
         return -1;
 
-    if(!( (float)nmeth/ncover >= MFloat && (float)nmeth/ncover <= (float) (1.0 - MFloat) ) ) {
+    if(!( (float)nmeth/ncover >= MFloat && (float)nmeth/ncover <= (float) (1.0 - MFloat) ) && !(nmeth>2 && ncover-nmeth>2) ) {
         return -1;
     }
     return 1;

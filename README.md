@@ -1,6 +1,6 @@
-## MethyHaplo: Combining Allele-specific DNA Methylation and SNPs for Haplotype Assembly
+## MethyHaplo: Combining Allele-specific DNA Methylation and SNPs for Haplotype Region Identification 
 
-DNA methylation is an important epigenetic modification that plays a critical role in most eukaryotic organisms. Parental alleles in haploids may exhibit different methylation patterns, which can lead to different phenotypes, and even different therapeutic and drug responses to diseases. However, there is currently no suitable software to obtain accurate DNA methylation haplotype results to our knowledge. To address this issue, we developed a new method, MethyHaplo, for haplotype assembly with allele-specific DNA methylation and SNPs from whole-genome bisulfite sequencing (WGBS) data. Our results showed that the haplotype assembly with allele-specific DNA methylation and SNPs was ten times longer than that with just SNPs. Moreover, MethyHaplo could integrate WGBS-Seq and Hi-C to obtain the better haplotype results. 
+DNA methylation is an important epigenetic modification that plays a critical role in most eukaryotic organisms. Parental alleles in haploid genomes may exhibit different methylation patterns, which can lead to different phenotypes and even different therapeutic and drug responses to diseases. However, to our knowledge, no software is available for the identification of DNA methylation haplotype regions. In this paper, we developed a new method, MethyHaplo, that identify DNA methylation haplotype regions with allele-specific DNA methylation and single nucleotide polymorphisms (SNPs) from whole-genome bisulfite sequencing (WGBS) data. Our results showed that methylation haplotype regions were ten times longer than haplotypes with SNPs only. When we integrate WGBS and high-throughput chromosome conformation capture (Hi-C) data, MethyHaplo could call even longer haplotypes. By constructing methylation haplotypes for various cell lines, we provide a clearer picture of the effect of DNA methylation on gene expression, histone modification and three-dimensional chromosome structure at the haplotype level. Our method could benefit the study of parental inheritance-related disease and heterosis in agriculture.
 
 ## This is a README file for the usage of MethyHaplo.
 ------
@@ -33,7 +33,7 @@ You can download the test data on
 ### Usage
 #### 1. MethyHaplo command
 ```
-        MethyHaplo: Combining Allele-specific DNA Methylation and SNPs for Haplotype Assembly
+        MethyHaplo: Combining Allele-specific DNA Methylation and SNPs for Haplotype Region Identification
         Usage: methyhaplo -M [mode] -a Y -m methfile -s <sam>/-b <bam> -o outputprefix
         Options:
                 -M <string> [hap|asm]         methyhaolo analysis mode

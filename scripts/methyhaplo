@@ -48,7 +48,7 @@ sub error
 	    "   --minIS <INT>                 Minimum insert size for a paired-end read to be considered as single fragment for phasing, default 0\n",
 	    "   --maxIS <INT>                 Maximum insert size for a paired-end read to be considered as a single fragment for phasing, default 1000\n",
 	    "   --DBtmpsize <INT>             Maximum size of temp read store, default 12000. (only useful in asm mode)\n",
-        "   --PE                          Paired-end reads.[default:single-end]\n",
+        "   --PE                          Paired-end reads.\n",
         "   -v, --vcffile <file>          snp file (optional)\n",
         "   -r, --chromosomal-order       Use natural ordering (1,2,10,MT,X) rather then the default (1,10,2,MT,X). \n",
         "                                     This requires new version of the unix \"sort\" command which supports the --version-sort option.\n",

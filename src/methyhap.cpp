@@ -141,7 +141,7 @@ int main(int argc, char* argv[])
 		"\t-q INT                only process reads with mapping quality >= INT [default >= 20].\n"
 		"\t-v|--snp              SNP file with genotypes for a single individual in BS-SNPer format.\n" 
 		"\t--vcf                 SNP file with genotypes for a single individual in VCF format, V4.1. (use this option or -v option but not both)\n"
-		"\t--PE                  paired-end reads.[default:single-end]\n"
+		"\t--PE                  paired-end reads.\n"
 		"\t-m|--methf            methratio file from batmeth2.\n"
         "\t-c|--context          methylation context process for methyhaplo. CG, CHG, CHH, ALL[default].\n"
 		"\t-M|--NMETH            Number of methylated reads cover cytosine site. default: 2 [m>=2]\n"

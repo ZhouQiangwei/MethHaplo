@@ -55,8 +55,8 @@ int main(int argc,char *argv[])
         fprintf(stderr, "Usage:\n    program plushaplo neghaplo > merge.haplo\n");
         exit(0);
     }
-    printf("[Methyhaplo] %s\n", argv[1]);
-    printf("[Methyhaplo] %s\n", argv[2]);
+    fprintf(stderr, "[Methyhaplo] %s\n", argv[1]);
+    fprintf(stderr, "[Methyhaplo] %s\n", argv[2]);
     char methyhaploIN[100];strcpy(methyhaploIN, argv[1]);
     char hicIN[100];strcpy(hicIN, argv[2]);
     std::vector<Block> Hap;
@@ -195,7 +195,7 @@ int main(int argc,char *argv[])
         }
         if(blkmerge.end < blktmp.start){
             if(blkmerge.start<blkmerge.end){
-                printf("Block\t%s\t%d\t%d\n", blkmerge.chr, blkmerge.start, blkmerge.end);
+                printf("#Block\t%s\t%d\t%d\n", blkmerge.chr, blkmerge.start, blkmerge.end);
                 std::vector<Link> linkout = blkmerge.adjanct;
                 for(int i=0; i<linkout.size(); i++){
                     printf("%s\t%d\t%c\t%c\t%d\n", blkmerge.chr, linkout[i].pos, linkout[i].hap1, linkout[i].hap2, linkout[i].datatype);
@@ -213,7 +213,7 @@ int main(int argc,char *argv[])
             }
             else{
                 if(blkmerge.start<blkmerge.end){
-                    printf("Block\t%s\t%d\t%d\n", blkmerge.chr, blkmerge.start, blkmerge.end);
+                    printf("#Block\t%s\t%d\t%d\n", blkmerge.chr, blkmerge.start, blkmerge.end);
                     std::vector<Link> linkout = blkmerge.adjanct;
                     for(int i=0; i<linkout.size(); i++){
                         printf("%s\t%d\t%c\t%c\t%d\n", blkmerge.chr, linkout[i].pos, linkout[i].hap1, linkout[i].hap2, linkout[i].datatype);
@@ -228,7 +228,7 @@ int main(int argc,char *argv[])
     }
     //print end blkmerge
     if(blkmerge.start<blkmerge.end){
-        printf("Block\t%s\t%d\t%d\n", blkmerge.chr, blkmerge.start, blkmerge.end);
+        printf("#Block\t%s\t%d\t%d\n", blkmerge.chr, blkmerge.start, blkmerge.end);
         std::vector<Link> linkout = blkmerge.adjanct;
         for(int i=0; i<linkout.size(); i++){
             printf("%s\t%d\t%c\t%c\t%d\n", blkmerge.chr, linkout[i].pos, linkout[i].hap1, linkout[i].hap2, linkout[i].datatype);

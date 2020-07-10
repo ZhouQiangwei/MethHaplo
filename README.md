@@ -34,7 +34,7 @@ You can download the test data on
 #### 1. MethyHaplo command
 ```
         MethyHaplo: Combining Allele-specific DNA Methylation and SNPs for Haplotype Region Identification
-        Usage: methyhaplo -M [mode] -a Y -m methfile -s <sam>/-b <bam> -o outputprefix
+        Usage: methyhaplo -M [mode] -a Y/N -m methfile -s <sam>/-b <bam> -o outputprefix
         Options:
                 -M <string> [hap|asm]         methyhaolo analysis mode
                                                 hap: iterative approach, prefer longer haplotype results;
@@ -56,7 +56,7 @@ You can download the test data on
                 --minIS <INT>                 Minimum insert size for a paired-end read to be considered as single fragment for phasing, default 0
                 --maxIS <INT>                 Maximum insert size for a paired-end read to be considered as a single fragment for phasing, default 1000
                 --DBtmpsize <INT>             Maximum size of temp read store, default 12000. (only useful in asm mode)
-                --PE                          Paired-end reads.[default:single-end]
+                --PE                          Paired-end reads.
                 -v, --vcffile <file>          snp file (optional)
                 -r, --chromosomal-order       Use natural ordering (1,2,10,MT,X) rather then the default (1,10,2,MT,X). 
                                                 This requires new version of the unix \sort\ command which supports the --version-sort option.

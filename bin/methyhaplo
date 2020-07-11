@@ -1,0 +1,307 @@
+#!/usr/bin/env perl
+
+use strict;
+use warnings;
+use Carp;
+use File::Spec;
+print "\n";
+my $path_curf = File::Spec->rel2abs(__FILE__);
+#print "C PATH = ",$path_curf,"\n";
+my ($vol, $dirs, $file) = File::Spec->splitpath($path_curf);
+
+my $opts = parse_params();
+print "Program dir: ", $dirs,"\n";
+runmain($opts);
+
+exit;
+
+#--------------------------------
+
+sub error
+{
+    my (@msg) = @_;
+    if ( scalar @msg )
+    {
+        croak @msg;
+    }
+    die
+        "MethyHaplo: Combining Allele-specific DNA Methylation and SNPs for Haplotype Assembly\n",
+        "Usage: methyhaplo -M [mode] -a Y -m methfile -s <sam>/-b <bam> -o outputprefix\n",
+        "Options:\n",
+        "   -M <string> [hap|asm]         methyhaolo analysis mode\n",
+        "                                     hap: iterative approach, prefer longer haplotype results;\n",
+        "                                     asm: hypergeometric approach, prefer accurate asm results.(default: hap);\n",
+        "   -m, --methfile <file>         methratio file (requires)\n",
+        "                                     format: chr  pos  strand  context  methlevel  methC  coverage\n",
+        "   -o, --out <string>            output file prefix\n",
+        "   -s, --sam <samfile>           sam file from batmeth2-align.  This file should be coordinate sorted, \n",
+        "                                     using the <samtools sort> command, and must contain methylstatus[MD:Z:].\n",
+        "   -b, --bam <bamfile>           bam file, should be coordinate sorted. (use this option or -s option but not both)\n",
+        "   -a <Y/N>                      If bam/sam file contain MD state by batmeth2 calmeth scripts.\n",
+        "                                     If not, please define genome location by -g paramater.\n",
+        "   -g, --genome <genome>         If bam/sam file isnot contain MD.\n",
+        "   -q <int>                      only process reads with mapping quality >= INT [default >= 20].\n",
+        "   -c, --context                 methylation context process for methyhaplo. CG, CHG, CHH, ALL[default].\n",
+        "   -C, --NMETH                   Number of methylated reads cover cytosine site. default: 2 [m>=2]\n",
+        "   -N, --NCOVER                  Number of coverage reads in cytosine site. default: 6 [n >= 6]\n",
+	    "   -f, --MFloat                  Cutoff of methratio. default: 0.1 [ f =< meth <= 1-f]\n",
+	    "   --minIS <INT>                 Minimum insert size for a paired-end read to be considered as single fragment for phasing, default 0\n",
+	    "   --maxIS <INT>                 Maximum insert size for a paired-end read to be considered as a single fragment for phasing, default 1000\n",
+	    "   --DBtmpsize <INT>             Maximum size of temp read store, default 12000. (only useful in asm mode)\n",
+        "   --PE                          Paired-end reads.\n",
+        "   -v, --vcffile <file>          snp file (optional)\n",
+        "   -r, --chromosomal-order       Use natural ordering (1,2,10,MT,X) rather then the default (1,10,2,MT,X). \n",
+        "                                     This requires new version of the unix \"sort\" command which supports the --version-sort option.\n",
+        "   -p, --parallel <int>          Change the number of sorts run concurrently to <int>\n",
+        "   -t, --temporary-directory     Use a directory other than /tmp as the temporary directory for sorting.\n",
+        "   -h, -?, --help                This help message.\n",
+        "\n";
+}
+
+sub parse_params
+{
+    my $opts = {};
+    if($#ARGV < 0){
+        error();
+    }
+    while (my $arg=shift(@ARGV))
+    {
+        if ( $arg eq '-p' || $arg eq '--parallel-sort' ) { $$opts{parallel_sort}=shift(@ARGV); next; }
+        if ( $arg eq '-r' || $arg eq '--chromosomal-order' ) { $$opts{chromosomal_order}=1; next; }
+        if ( $arg eq '-o' || $arg eq '--out' ) { $$opts{output}=shift(@ARGV); next; }
+        if ( $arg eq '-s' || $arg eq '--sam' ) { $$opts{samfile}=shift(@ARGV); next; }
+        if ( $arg eq '-b' || $arg eq '--bam' ) { $$opts{bamfile}=shift(@ARGV); next; }
+        if ( $arg eq '-a' ) { $$opts{mdstate}=shift(@ARGV); next; }
+        if ( $arg eq '-g' || $arg eq '--genome' ) { $$opts{genome}=shift(@ARGV); next; }
+        if ( $arg eq '-q') { $$opts{qual}=shift(@ARGV); next; }
+        if ( $arg eq '-c' || $arg eq '--context' ) { $$opts{context}=shift(@ARGV); next; }
+        if ( $arg eq '-C' || $arg eq '--NMETH' ) { $$opts{Nmeth}=shift(@ARGV); next; }
+        if ( $arg eq '-N' || $arg eq '--NCOVER' ) { $$opts{Ncover}=shift(@ARGV); next; }
+        if ( $arg eq '-f' || $arg eq '--MFloat' ) { $$opts{Mfloat}=shift(@ARGV); next; }
+        if ( $arg eq '--minIS' ) { $$opts{minIS}=shift(@ARGV); next; }
+        if ( $arg eq '--maxIS' ) { $$opts{maxIS}=shift(@ARGV); next; }
+        if ( $arg eq '--DBtmpsize' ) { $$opts{DBtmpsize}=shift(@ARGV); next; }
+        if ( $arg eq '--PE' ) { $$opts{layout}="paired"; next; }
+        if ( $arg eq '-M' ) { $$opts{mode}=shift(@ARGV); next; }
+        if ($arg eq '-d') {sortvcf($opts); last;}
+        if ( $arg eq '-?' || $arg eq '-h' || $arg eq '--help' ) { error(); }
+        if ( $arg eq '-t' || $arg eq '--temporary-directory' ) { $$opts{temp_dir}=shift(@ARGV); next; }
+        if ( $arg eq '-m' || $arg eq '--methfile' ) { $$opts{methfile}=shift(@ARGV); next; }
+        if ( $arg eq '-v' || $arg eq '--vcffile' ) { $$opts{vcffile}=shift(@ARGV); next; }
+        #if ( -e $arg ) { $$opts{file}=$arg; next }
+        error("Unknown parameter \"$arg\". Run -h for help.\n");
+    }
+    return $opts;
+}
+
+sub runmain
+{
+    my ($opts) = @_;
+    
+    my $cmd;
+    if ( !exists($$opts{methfile}) ){
+        print("Please define methratio file with -m paramater!\n");
+        exit(1);
+    }
+    my $context = "ALL";
+    my $nmeth = 2;
+    my $ncover = 6;
+    my $Mfloat = 0.1;
+    my $minIS = 0;
+    my $maxIS = 1000;
+    my $qual = 20;
+    my $DBtmpsize = 12000;
+    my $layout = "";
+    if ( exists($$opts{context}) ){
+        $context = $$opts{context};
+    }
+    if ( exists($$opts{Nmeth}) ){
+        $nmeth = $$opts{Nmeth};
+    }
+    if ( exists($$opts{qual}) ){
+        $qual = $$opts{qual};
+    }
+    if ( exists($$opts{Ncover}) ){
+        $ncover = $$opts{Ncover};
+    }
+    if ( exists($$opts{Mfloat}) ){
+        $Mfloat = $$opts{Mfloat};
+    }
+    if ( exists($$opts{minIS}) ){
+        $minIS = $$opts{minIS};
+    }
+    if ( exists($$opts{maxIS}) ){
+        $maxIS = $$opts{maxIS};
+    }
+    if ( exists($$opts{layout}) ){
+        $layout = "--PE";
+    }
+    if($$opts{mode} eq "asm"){
+        if($$opts{mdstate} eq "N" && exists($$opts{genome}) ){
+            print("[Methyhaplo] process genome file!\n");
+            $cmd = "$dirs/filgenome $$opts{genome} x";
+            system($cmd) == 0 or die "failed: $!";
+            if( exists($$opts{samfile})){
+                $cmd = "$dirs/bam2md -g $$opts{genome} -i $$opts{samfile} | samtools sort -o $$opts{samfile}.md.bam - ";
+            }elsif( exists($$opts{bamfile})){
+                $cmd = "$dirs/bam2md -g $$opts{genome} -b $$opts{bamfile} | samtools sort -o $$opts{samfile}.md.bam - ";
+            }
+            print("[Methyhaplo] process bam file and sort!\n");
+            system($cmd) == 0 or die "failed: $!";
+            $cmd = "$dirs/methyhap -o $$opts{output} -m $$opts{methfile} -b $$opts{samfile}.md.bam  -c $context -M $nmeth -N $ncover -f $Mfloat --minIS $minIS --maxIS $maxIS -q $qual $layout";
+            system($cmd) == 0 or die "failed: $!";
+        }else{
+            if( exists($$opts{samfile})){
+                $cmd = "$dirs/methyhap -o $$opts{output} -m $$opts{methfile} -s $$opts{samfile} -c $context -M $nmeth -N $ncover -f $Mfloat --minIS $minIS --maxIS $maxIS -q $qual $layout";
+            }elsif( exists($$opts{bamfile})){
+                $cmd = "$dirs/methyhap -o $$opts{output} -m $$opts{methfile} -b $$opts{bamfile} -c $context -M $nmeth -N $ncover -f $Mfloat --minIS $minIS --maxIS $maxIS -q $qual $layout";
+            }else{
+                print("Please define alignment file with -s or -b paramater!\n");
+                exit(1);
+            }
+        }
+        system($cmd) == 0 or die "failed: $!";
+        $cmd = "$dirs/ASM -i $$opts{output}.plus.txt -o $$opts{output}.asm.plus -b $$opts{output}.asm.plus.bed";
+        system($cmd) == 0 or die "failed: $!";
+        $cmd = "$dirs/ASM -i $$opts{output}.neg.txt -o $$opts{output}.asm.neg -b $$opts{output}.asm.neg.bed";
+        system($cmd) == 0 or die "failed: $!";
+    }else{
+        my $varfilep;
+        my $varfilen;
+        print("[Methyhaplo] process methfile!\n");
+        if ( exists($$opts{vcffile}) )
+        {
+            print("[Methyhaplo] process methfile and vcf file!\n");
+            #$cmd = "awk -v m=$nmeth -v n=$ncover -v f=$Mfloat -v context=$context " . '-v OFS="\t" \'($4==context || context == "ALL") && $6>=n && ($7>=f && $7<=1-f){if($3=="+"){print $1,$2,".\tC\tT\t600\tPASS\t.\tGT\t0/1" ' . " >> \"$$opts{methfile}.p\" " . ' }else{print $1,$2,".\tG\tA\t600\tPASS\t.\tGT\t0/1" ' . ">> \"$$opts{methfile}.n\" " . '} }\' ' . " $$opts{methfile}" ;
+            $cmd = "$dirs/splitmr -i $$opts{methfile} -m $nmeth -n $ncover -f $Mfloat -c $context";
+            system($cmd) == 0 or die "failed: $!";
+            $cmd = "cat $$opts{vcffile} $$opts{methfile}.p | $path_curf -d > $$opts{methfile}.mrsnp.p";
+            system($cmd) == 0 or die "failed: $!";
+            $cmd = "cat $$opts{vcffile} $$opts{methfile}.n | $path_curf -d > $$opts{methfile}.mrsnp.n";
+            system($cmd) == 0 or die "failed: $!";
+            $cmd="rm $$opts{methfile}.p && rm $$opts{methfile}.n";
+            system($cmd) == 0 or die "failed: $!"; 
+            #$cmd = "awk -v m=$nmeth -v n=$ncover -v f=$Mfloat -v context=$context " . '-v OFS="\t" \'$3=="+" && ($4==context || context == "ALL") && $6>=n && ($7>=f && $7<=1-f){print $1,$2,".\tC\tT\t600\tPASS\t.\tGT\t0/1"}\' ' . "$$opts{methfile} | cat $$opts{vcffile}  - | $path_curf -d > $$opts{methfile}.mrsnp.p";
+            #$cmd = "awk -v m=$nmeth -v n=$ncover -v f=$Mfloat -v context=$context " . '-v OFS="\t" \'$3=="-" && ($4==context || context == "ALL") && $6>=n && ($7>=f && $7<=1-f){print $1,$2,".\tG\tA\t600\tPASS\t.\tGT\t0/1"}\' ' . "$$opts{methfile} | cat $$opts{vcffile} - | $path_curf -d > $$opts{methfile}.mrsnp.n";
+            $varfilep = "$$opts{methfile}.mrsnp.p";
+            $varfilen = "$$opts{methfile}.mrsnp.n";
+        }else
+        {
+            #$cmd = "awk -v m=$nmeth -v n=$ncover -v f=$Mfloat -v context=$context " . '-v OFS="\t" \'($4==context || context == "ALL") && $6>=n && ($7>=f && $7<=1-f){if($3=="+"){print $1,$2,".\tC\tT\t600\tPASS\t.\tGT\t0/1" ' . " >> \"$$opts{methfile}.p\" " . ' }else{print $1,$2,".\tG\tA\t600\tPASS\t.\tGT\t0/1" ' . ">> \"$$opts{methfile}.n\" " . '} }\' ' . " $$opts{methfile}" ;
+            $cmd = "$dirs/splitmr -i $$opts{methfile} -m $nmeth -n $ncover -f $Mfloat -c $context";
+            system($cmd) == 0 or die "failed: $!";
+            $varfilep = "$$opts{methfile}.p";
+            $varfilen = "$$opts{methfile}.n";
+        }
+        ##done split meth and sort vcf; next, process hap
+        my $newFile;
+        print("[Methyhaplo] split bamfile by alignment strand!\n");
+        if( exists($$opts{samfile})){
+            $newFile = $$opts{samfile};
+        }elsif( exists($$opts{bamfile})){
+            $newFile = $$opts{bamfile};
+        }else{
+            print("Please define alignment file with -s or -b paramater!\n");
+            exit(1);    
+        }
+        #already add strand to extrathairs
+        #if( exists($$opts{samfile})){
+        #    $cmd = "$dirs/bamStrand $$opts{samfile}";
+        #    $newFile =~ s/.sam$//;
+        #}elsif( exists($$opts{bamfile})){
+        #    $cmd = "$dirs/bamStrand $$opts{bamfile}";
+        #    $newFile =~ s/.bam$//;
+        #}else{
+        #    print("Please define alignment file with -s or -b paramater!\n");
+        #    exit(1);
+        #}
+        #system($cmd) == 0 or die "failed: $!";
+
+        print("[Methyhaplo] Haplotype assembly with plus strand DNA methylation information!\n");
+        ## plus hap
+        $cmd = "$dirs/extracthairs --strand 1 --bam $newFile --VCF $varfilep --out $$opts{output}.p.fragment --minIS $minIS --maxIS $maxIS --mmq $qual";
+        system($cmd) == 0 or die "failed: $!";
+        $cmd = "$dirs/hapcut2 --fragments $$opts{output}.p.fragment --vcf $varfilep --output $$opts{output}.p.haplo";
+        system($cmd) == 0 or die "failed: $!";
+        ## neg 
+        print("[Methyhaplo] Haplotype assembly with neg strand DNA methylation information!\n");
+        $cmd = "$dirs/extracthairs --strand 2 --bam $newFile --VCF $varfilen --out $$opts{output}.n.fragment --minIS $minIS --maxIS $maxIS --mmq $qual";
+        system($cmd) == 0 or die "failed: $!";
+        $cmd = "$dirs/hapcut2 --fragments $$opts{output}.n.fragment --vcf $varfilen --output $$opts{output}.n.haplo";
+        system($cmd) == 0 or die "failed: $!";
+        $cmd = "rm $$opts{output}.n.fragment && rm $$opts{output}.p.fragment";
+        system($cmd) == 0 or die "failed: $!";
+        print("[Methyhaplo] Haplotype assembly merge strand files!\n");
+        $cmd = "$dirs/bsmerge $$opts{output}.p.haplo $$opts{output}.n.haplo > $$opts{output}.haplo";
+        system($cmd) == 0 or die "failed: $!";
+        print("[Methyhaplo] done!\n");
+    }
+
+}
+
+sub sortvcf{
+    my ($opts) = @_;
+    my $fh;
+    if ( exists($$opts{file}) )
+    {
+        if ( $$opts{file}=~/\.gz$/i )
+        {
+            open($fh,"gunzip -c $$opts{file} |") or error("$$opts{file}: $!");
+        }
+        else
+        {
+            open($fh,'<',$$opts{file}) or error("$$opts{file}: $!");
+        }
+    }
+    else { $fh = *STDIN; }
+
+    my $sort_opts = check_sort_options($opts);
+    my $cmd;
+    if ( exists($$opts{temp_dir}) )
+    {
+        $cmd = "sort $sort_opts -T $$opts{temp_dir} -k2,2n";    
+    }
+    else
+    {
+        $cmd = "sort $sort_opts -k2,2n";
+    }
+    print STDERR "$cmd\n";
+    open(my $sort_fh,"| $cmd") or error("$cmd: $!");
+
+    my $unflushed = select(STDOUT); 
+    $| = 1; 
+    while (my $line=<$fh>)
+    {
+        if ( $line=~/^#/ ) { print $line; next; }
+        print $sort_fh $line;
+        last;
+    }
+    select($unflushed);
+    while (my $line=<$fh>)
+    {
+        print $sort_fh $line;
+    }
+}
+
+sub check_sort_options
+{
+    my ($opts) = @_;
+
+    my $sort_opts = join('',`sort --help`);
+    my $has_version_sort = ( $sort_opts=~/\s+--version-sort\s+/ ) ? 1 : 0;
+    my $has_parallel_sort = ( $sort_opts=~/\s+--parallel=/ ) ? 1 : 0;
+
+    if ( $$opts{chromosomal_order} && !$has_version_sort ) 
+    {
+        error("Old version of sort command installed, please run without the -c option.\n");
+    }
+    if ( $$opts{parallel_sort} && !$has_version_sort ) 
+    {
+        error("Old version of sort command installed, please run without the -p option.\n");
+    }
+    $sort_opts  = ( $$opts{chromosomal_order} && $has_version_sort ) ? '-k1,1V' : '-k1,1d';
+    if ( $$opts{parallel_sort} && $has_parallel_sort ) { $sort_opts .= " --parallel $$opts{parallel_sort}"; }
+    
+    return $sort_opts;
+}
+

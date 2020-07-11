@@ -52,7 +52,7 @@ You can download the test data on
                 -c, --context                 methylation context process for methyhaplo. CG, CHG, CHH, ALL[default].
                 -C, --NMETH                   Number of methylated reads cover cytosine site. default: 2 [m>=2]
                 -N, --NCOVER                  Number of coverage reads in cytosine site. default: 6 [n >= 6]
-                -f, --MFloat                  Cutoff of methratio. default: 0.2 [ f =< meth <= 1-f]
+                -f, --MFloat                  Cutoff of methratio. default: 0.1 [ f =< meth <= 1-f]
                 --minIS <INT>                 Minimum insert size for a paired-end read to be considered as single fragment for phasing, default 0
                 --maxIS <INT>                 Maximum insert size for a paired-end read to be considered as a single fragment for phasing, default 1000
                 --DBtmpsize <INT>             Maximum size of temp read store, default 12000. (only useful in asm mode)

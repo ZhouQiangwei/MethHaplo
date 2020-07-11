@@ -1,7 +1,7 @@
 ## ASM analysis (BAM file with MD:Z state)
 ../bin/methyhaplo -M asm -a Y -m asmtestdata.mr -b asmtestdata.bam -o asmtest.output
 ## ASM analysis (BAM file without MD:Z state)
-../bin/methyhaplo -M asm -a N -m asmtestdata.mr -b asmtestdata.nomd.bam -o asmtest.output -g ~/practice/Genome/hg38/batmeth2-chr/hg38.chr.fa
+../bin/methyhaplo -M asm -a N -m asmtestdata.mr -b asmtestdata.nomd.bam -o asmtest.output -g hg38.chr.fa
 ## Hap analysis
 ../bin/methyhaplo -M hap -a Y -m asmtestdata.mr -b asmtestdata.bam -o asmtest.output
 

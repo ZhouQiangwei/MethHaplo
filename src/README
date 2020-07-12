@@ -1,9 +1,9 @@
 Step 1: DNA methylation haplotype assembly
 
-BatMeth2::methyhaplo: haplotype assembly for DNA methylation(BSseq) next-generation sequencing data. 
+BatMeth2::methHaplo: haplotype assembly for DNA methylation(BSseq) next-generation sequencing data. 
 version: v1.0
 
-Command Format :  methyhaplo [options] -o <haplotype result> -s <sam format file>/-b <bam>
+Command Format :  methHaplo [options] -o <haplotype result> -s <sam format file>/-b <bam>
 
 ======================== METHYHAPLO OPTIONS ========================
 	-o|--out              Output file prefix
@@ -26,7 +26,7 @@ Command Format :  ASM [options] -i <haplotype result> -o <ASM out result>
 
 ======================== PROGRAM OPTIONS ========================
 	-o|--out              Output file prefix. Allele-specific methylation(ASM) output.
-	-i                    input file.  This file is the result of methyhaplo.
+	-i                    input file.  This file is the result of methHaplo.
 	-b                    output file. Allelically methylated regions(AMRs) bed format file.
 	-p|--pvale [double]   Pvalue cutoff. default: 0.01
 	-c|--cutoff [int]     print the region that >= number of adjant Cs. default: 4

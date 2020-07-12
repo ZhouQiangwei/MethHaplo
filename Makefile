@@ -107,7 +107,7 @@ install:
 	cp src/bsmergehic ./bin/
 	cp submodules/HapCUT2/build/HAPCUT2 ./bin/hapcut2
 	cp submodules/HapCUT2/build/extractHAIRS ./bin/extracthairs
-	cp scripts/methyhaplo ./bin/
+	cp scripts/methHaplo ./bin/
 	cp scripts/bamStrand ./bin/
 	cp src/bam2md ./bin/
 	cp src/filgenome ./bin/

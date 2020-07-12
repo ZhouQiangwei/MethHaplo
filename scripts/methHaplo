@@ -26,7 +26,7 @@ sub error
     }
     die
         "MethyHaplo: Combining Allele-specific DNA Methylation and SNPs for Haplotype Assembly\n",
-        "Usage: methyhaplo -M [mode] -a Y -m methfile -s <sam>/-b <bam> -o outputprefix\n",
+        "Usage: methHaplo -M [mode] -a Y -m methfile -s <sam>/-b <bam> -o outputprefix\n",
         "Options:\n",
         "   -M <string> [hap|asm]         methyhaolo analysis mode\n",
         "                                     hap: iterative approach, prefer longer haplotype results;\n",
@@ -41,7 +41,7 @@ sub error
         "                                     If not, please define genome location by -g paramater.\n",
         "   -g, --genome <genome>         If bam/sam file isnot contain MD.\n",
         "   -q <int>                      only process reads with mapping quality >= INT [default >= 20].\n",
-        "   -c, --context                 methylation context process for methyhaplo. CG, CHG, CHH, ALL[default].\n",
+        "   -c, --context                 methylation context process for methHaplo. CG, CHG, CHH, ALL[default].\n",
         "   -C, --NMETH                   Number of methylated reads cover cytosine site. default: 2 [m>=2]\n",
         "   -N, --NCOVER                  Number of coverage reads in cytosine site. default: 6 [n >= 6]\n",
 	    "   -f, --MFloat                  Cutoff of methratio. default: 0.1 [ f =< meth <= 1-f]\n",
@@ -144,7 +144,7 @@ sub runmain
             if( exists($$opts{samfile})){
                 $cmd = "$dirs/bam2md -g $$opts{genome} -i $$opts{samfile} | samtools sort -o $$opts{samfile}.md.bam - ";
             }elsif( exists($$opts{bamfile})){
-                $cmd = "$dirs/bam2md -g $$opts{genome} -b $$opts{bamfile} | samtools sort -o $$opts{samfile}.md.bam - ";
+                $cmd = "$dirs/bam2md -g $$opts{genome} -b $$opts{bamfile} | samtools sort -o $$opts{bamfile}.md.bam - ";
             }
             print("[Methyhaplo] process bam file and sort!\n");
             system($cmd) == 0 or die "failed: $!";

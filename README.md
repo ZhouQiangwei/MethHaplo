@@ -34,7 +34,7 @@ You can found the test data in ./test dir.
 #### 1. MethHaplo command
 ```
         MethHaplo: Combining Allele-specific DNA Methylation and SNPs for Haplotype Region Identification
-        Usage: methyhaplo -M [mode] -a Y/N -m methfile -s <sam>/-b <bam> -o outputprefix
+        Usage: methHaplo -M [mode] -a Y/N -m methfile -s <sam>/-b <bam> -o outputprefix
         Options:
                 -M <string> [hap|asm]         methyhaolo analysis mode
                                                 hap: iterative approach, prefer longer haplotype results;
@@ -49,7 +49,7 @@ You can found the test data in ./test dir.
                                                 If not, please define genome location by -g paramater.
                 -g, --genome <genome>         If bam/sam file isnot contain MD.
                 -q <int>                      only process reads with mapping quality >= INT [default >= 20].
-                -c, --context                 methylation context process for methyhaplo. CG, CHG, CHH, ALL[default].
+                -c, --context                 methylation context process for methHaplo. CG, CHG, CHH, ALL[default].
                 -C, --NMETH                   Number of methylated reads cover cytosine site. default: 2 [m>=2]
                 -N, --NCOVER                  Number of coverage reads in cytosine site. default: 6 [n >= 6]
                 -f, --MFloat                  Cutoff of methratio. default: 0.1 [ f =< meth <= 1-f]

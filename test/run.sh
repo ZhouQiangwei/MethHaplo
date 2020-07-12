@@ -1,9 +1,9 @@
 ## ASM analysis (BAM file with MD:Z state)
-../bin/methyhaplo -M asm -a Y -m asmtestdata.mr -b asmtestdata.bam -o asmtest.output
+../bin/methHaplo -M asm -a Y -m asmtestdata.mr -b asmtestdata.bam -o asmtest.output
 ## ASM analysis (BAM file without MD:Z state)
-../bin/methyhaplo -M asm -a N -m asmtestdata.mr -b asmtestdata.nomd.bam -o asmtest.output -g hg38.chr.fa
+../bin/methHaplo -M asm -a N -m asmtestdata.mr -b asmtestdata.nomd.bam -o asmtest.output -g hg38.chr.fa
 ## Hap analysis
-../bin/methyhaplo -M hap -a Y -m asmtestdata.mr -b asmtestdata.bam -o asmtest.output
+../bin/methHaplo -M hap -a Y -m asmtestdata.mr -b asmtestdata.bam -o asmtest.output
 
 ## results [asm bed file]
 ### chromosome start end length Nmeth

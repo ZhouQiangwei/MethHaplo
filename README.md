@@ -36,7 +36,7 @@ You can found the test data in ./test dir.
         MethHaplo: Combining Allele-specific DNA Methylation and SNPs for Haplotype Region Identification
         Usage: methHaplo -M [mode] -a Y/N -m methfile -s <sam>/-b <bam> -o outputprefix
         Options:
-                -M <string> [hap|asm]         methyhaolo analysis mode
+                -M <string> [hap|asm]         methHaplo analysis mode
                                                 hap: iterative approach, prefer longer haplotype results;
                                                 asm: hypergeometric approach, prefer accurate asm results.(default: hap);
                 -m, --methfile <file>         methratio file (requires)

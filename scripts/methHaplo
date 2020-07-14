@@ -143,13 +143,17 @@ sub runmain
             system($cmd) == 0 or die "failed: $!";
             if( exists($$opts{samfile})){
                 $cmd = "$dirs/bam2md -g $$opts{genome} -i $$opts{samfile} | samtools sort -o $$opts{samfile}.md.bam - ";
+                print("[Methyhaplo] process bam file and sort!\n");
+                system($cmd) == 0 or die "failed: $!";
+                $cmd = "$dirs/methyhap -o $$opts{output} -m $$opts{methfile} -b $$opts{samfile}.md.bam  -c $context -M $nmeth -N $ncover -f $Mfloat --minIS $minIS --maxIS $maxIS -q $qual $layout";
+                system($cmd) == 0 or die "failed: $!";
             }elsif( exists($$opts{bamfile})){
                 $cmd = "$dirs/bam2md -g $$opts{genome} -b $$opts{bamfile} | samtools sort -o $$opts{bamfile}.md.bam - ";
+                print("[Methyhaplo] process bam file and sort!\n");
+                system($cmd) == 0 or die "failed: $!";
+                $cmd = "$dirs/methyhap -o $$opts{output} -m $$opts{methfile} -b $$opts{bamfile}.md.bam  -c $context -M $nmeth -N $ncover -f $Mfloat --minIS $minIS --maxIS $maxIS -q $qual $layout";
+                system($cmd) == 0 or die "failed: $!";
             }
-            print("[Methyhaplo] process bam file and sort!\n");
-            system($cmd) == 0 or die "failed: $!";
-            $cmd = "$dirs/methyhap -o $$opts{output} -m $$opts{methfile} -b $$opts{samfile}.md.bam  -c $context -M $nmeth -N $ncover -f $Mfloat --minIS $minIS --maxIS $maxIS -q $qual $layout";
-            system($cmd) == 0 or die "failed: $!";
         }else{
             if( exists($$opts{samfile})){
                 $cmd = "$dirs/methyhap -o $$opts{output} -m $$opts{methfile} -s $$opts{samfile} -c $context -M $nmeth -N $ncover -f $Mfloat --minIS $minIS --maxIS $maxIS -q $qual $layout";

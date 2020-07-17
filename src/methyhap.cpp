@@ -238,6 +238,7 @@ int main(int argc, char* argv[])
 	}
 	//printf("\n%f %f\n",fishers_exact(9,0,1,3),gsl_cdf_hypergeometric_Q(8,9,4,10) );
 	if(argc<=3 || !hetero_meth) printf("%s \n",Help_String);
+        
 	if (argc >1 && hetero_meth) 
 	{
 		try
@@ -1634,8 +1635,9 @@ int process_meth(char* buffer,int& var_t, char& strand, char* chrom, char* conte
     free(tempstring);
     if( ncover < NCOVER) 
         return -1;
+    //printf("\n=== %f %f %f==\n", ((float)nmeth)/ncover, (float)nmeth/ncover, (float) (1.0 - MFloat));
 
-    if(!( (float)nmeth/ncover >= MFloat && (float)nmeth/ncover <= (float) (1.0 - MFloat) ) && !(nmeth>2 && ncover-nmeth>2) ) {
+    if(!( ((float)nmeth)/ncover >= MFloat && ((float)nmeth)/ncover <= (float) (1.0 - MFloat) ) || !(nmeth>2 && ncover-nmeth>2) ) {
         return -1;
     }
     return 1;

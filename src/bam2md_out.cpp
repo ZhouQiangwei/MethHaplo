@@ -255,7 +255,7 @@ int main(int argc, char* argv[])
 	if(argc<=3) printf("%s \n",Help_String);
 	if (argc >3  && InFileStart) 
 	{
-		printf("\nBatMeth2::bam2md v2.0\n");
+		printf("\nbam2md v1.0\n");
 
       try
 		{

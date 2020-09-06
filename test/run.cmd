@@ -2,6 +2,7 @@
 ../bin/methHaplo -M asm -a Y -m asmtestdata.mr -b asmtestdata.bam -o asmtest.output
 ## ASM analysis (BAM file without MD:Z state)
 ../bin/methHaplo -M asm -a N -m asmtestdata.mr -b asmtestdata.nomd.bam -o asmtest.output -g hg38.chr.fa
+Annotation: the chromosome name in the reference genome specified by -g should be consistent with the chromosome name in BAM file
 ## Hap analysis
 ../bin/methHaplo -M hap -a Y -m asmtestdata.mr -b asmtestdata.bam -o asmtest.output
 

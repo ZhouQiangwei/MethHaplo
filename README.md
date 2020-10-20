@@ -30,6 +30,9 @@ d) The binary of MethHaplo will be created in current folder
 ### Example data
 You can found the test data in ./test dir.
 
+### Citation:
+[Zhou, Q., Wang, Z., Li, J. et al. MethHaplo: combining allele-specific DNA methylation and SNPs for haplotype region identification. BMC Bioinformatics 21, 451 (2020).](https://bmcbioinformatics.biomedcentral.com/articles/10.1186/s12859-020-03798-7)
+
 ### Usage
 #### 1. MethHaplo command
 ```

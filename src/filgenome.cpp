@@ -103,13 +103,21 @@ int main(int argc, char* argv[])
 			}
 			else
 			{
+                for(i=0;i<Buf_Size-1;i++){
+                    if(Buffer[i]==' ' || Buffer[i]=='\t') {
+                        Buffer[i] = '\n';
+                        Buffer[i+1] = 0;
+                        break;
+                    }
+                }
+                
 				fprintf(ANN,"%d\n%s",chrlen,Buffer+1);
 				chrlen=0;
 				if (In_Amb) {fprintf(NFILE,"%u\n",Offset);In_Amb=false;}
 				fprintf(NFILE,"%s",Buffer);
 				Offset=0;
 			}
-			//printf("%s",Buffer);
+			//printf("+s",Buffer);
 		}
 		fprintf(ANN,"%d\n",chrlen);
 		if (In_Amb) {fprintf(NFILE,"%u\n",Offset);In_Amb=false;}

@@ -37,7 +37,7 @@ extern "C"
 
 
 #define MAX_HITS_ALLOWED 1500
-#define CHROMSIZE 100
+#define CHROMSIZE 1000
 #define BATBUF 50000
 #define MAXTAG 500
 
@@ -289,7 +289,7 @@ int main(int argc, char* argv[])
 				fgets(Genome_Offsets[Genome_Count].Genome,39,Location_File);
 				for(int i=0;i<40;i++) 
 				{
-					if (Genome_Offsets[Genome_Count].Genome[i] == '\n' ||Genome_Offsets[Genome_Count].Genome[i] == '\r')
+					if (Genome_Offsets[Genome_Count].Genome[i] == '\n' ||Genome_Offsets[Genome_Count].Genome[i] == '\r' || Genome_Offsets[Genome_Count].Genome[i] == ' ' || Genome_Offsets[Genome_Count].Genome[i] == '\t')
 					{ 
 						Genome_Offsets[Genome_Count].Genome[i]=0;
 						break;
@@ -682,7 +682,7 @@ void *Process_read(void *arg)
 	string hits[MAX_HITS_ALLOWED];
 	char Comp_String[MAXTAG];for (int i=1;i<MAXTAG;Comp_String[i++]=0);
 	//start to read batman hit file
-	char *s2t = (char*) malloc(600);
+	char *s2t = (char*) malloc(1000);
 	char read_Methyl_Info[600];char rawReadBeforeBS[600];char temp[5];
 	char Dummy[BATBUF],forReadString[BATBUF],Chrom[CHROMSIZE];
 	char Chrom_P[CHROMSIZE];int pos_P=0;int Insert_Size=0;int Qsingle=0; //Paired-end reads
@@ -773,6 +773,7 @@ void *Process_read(void *arg)
 				hitType=4;
 			if(hitType==0) continue;
 		}
+        //printf("%s %d %s\n", CIGr.c_str(), Genome_Offsets[H+1].Offset, readString.c_str());
 		int Nmismatch=conutMismatch(CIGr, Genome_Offsets[H+1].Offset, Genome_List[H].Genome, readString, pos, hitType);
 		if(Nmismatch > 0.5 + UPPER_MAX_MISMATCH * strlen(readString.c_str())) continue;
 		//char* Genome;

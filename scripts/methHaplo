@@ -141,16 +141,22 @@ sub runmain
         if($$opts{mdstate} eq "N" && exists($$opts{genome}) ){
             print("[Methyhaplo] process genome file!\n");
             $cmd = "$dirs/filgenome $$opts{genome} x";
-            system($cmd) == 0 or die "failed: $!";
+            my $binfileExist = -e "$$opts{genome}.bin";
+			my $annfileExist = -e "$$opts{genome}.ann.location";
+			if ( $binfileExist && $annfileExist ) {
+				print("[Methyhaplo] genome files exits!\n");
+			}else{
+            	system($cmd) == 0 or die "failed: $!";
+			}
             if( exists($$opts{samfile})){
                 $cmd = "$dirs/bam2md -g $$opts{genome} -i $$opts{samfile} | samtools sort -o $$opts{samfile}.md.bam - ";
-                print("[Methyhaplo] process bam file and sort!\n");
+                print("[Methyhaplo] process bam file and sort!\n[Methyhaplo] $cmd\n");
                 system($cmd) == 0 or die "failed: $!";
                 $cmd = "$dirs/methyhap -o $$opts{output} -m $$opts{methfile} -b $$opts{samfile}.md.bam  -c $context -M $nmeth -N $ncover -f $Mfloat --minIS $minIS --maxIS $maxIS -q $qual $layout";
                 system($cmd) == 0 or die "failed: $!";
             }elsif( exists($$opts{bamfile})){
                 $cmd = "$dirs/bam2md -g $$opts{genome} -b $$opts{bamfile} | samtools sort -o $$opts{bamfile}.md.bam - ";
-                print("[Methyhaplo] process bam file and sort!\n");
+                print("[Methyhaplo] process bam file and sort!\n[Methyhaplo] $cmd\n");
                 system($cmd) == 0 or die "failed: $!";
                 $cmd = "$dirs/methyhap -o $$opts{output} -m $$opts{methfile} -b $$opts{bamfile}.md.bam  -c $context -M $nmeth -N $ncover -f $Mfloat --minIS $minIS --maxIS $maxIS -q $qual $layout";
                 system($cmd) == 0 or die "failed: $!";

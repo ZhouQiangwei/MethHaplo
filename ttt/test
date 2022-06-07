@@ -1,0 +1,10 @@
+#chromsome	loci	strand	context	C_count	CT_count	methRatio	eff_CT_count	rev_G_count	rev_GA_count	MethContext	5context
+chr1	3050003	-	CHG	2	4	0.500000	null	3	3	U	TACTG
+chr1	3050009	-	CHH	2	4	0.500000	null	4	4	U	TTCTT
+1	3050013	+	CHH	2	4	0.500000	null	5	5	U	AACAA
+1	3050022	-	CHH	0	5	0.000000	null	4	4	U	CTCTA
+1	3050024	-	CHH	1	5	0.200000	null	4	4	hU	TCCTC
+1	3050025	-	CHH	0	5	0.000000	null	4	4	U	TTCCT
+1	3050028	+	CHH	0	4	0.000000	null	5	5	U	AACTA
+1	3050038	-	CHH	0	5	0.000000	null	4	4	U	TGCAA
+1	3050039	+	CHH	0	4	0.000000	null	5	5	U	TGCAA

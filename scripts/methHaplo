@@ -55,6 +55,7 @@ sub error
         "                                     This requires new version of the unix \"sort\" command which supports the --version-sort option.\n",
         "   -p, --parallel <int>          Change the number of sorts run concurrently to <int>\n",
         "   -t, --temporary-directory     Use a directory other than /tmp as the temporary directory for sorting.\n",
+        "   --hic 0/1                     increases accuracy on methyHi-C data, default 0.\n",
         "   -h, -?, --help                This help message.\n",
         "\n";
 }
@@ -79,6 +80,7 @@ sub parse_params
         if ( $arg eq '-C' || $arg eq '--NMETH' ) { $$opts{Nmeth}=shift(@ARGV); next; }
         if ( $arg eq '-N' || $arg eq '--NCOVER' ) { $$opts{Ncover}=shift(@ARGV); next; }
         if ( $arg eq '-f' || $arg eq '--MFloat' ) { $$opts{Mfloat}=shift(@ARGV); next; }
+        if ( $arg eq '--hic' ) { $$opts{hic}=shift(@ARGV); next; }
         if ( $arg eq '--minIS' ) { $$opts{minIS}=shift(@ARGV); next; }
         if ( $arg eq '--maxIS' ) { $$opts{maxIS}=shift(@ARGV); next; }
         if ( $arg eq '--DBtmpsize' ) { $$opts{DBtmpsize}=shift(@ARGV); next; }
@@ -113,6 +115,10 @@ sub runmain
     my $qual = 20;
     my $DBtmpsize = 12000;
     my $layout = "";
+    my $hicmode = 0;
+    if ( exists($$opts{hic}) ){
+        $hicmode = $$opts{hic};
+    }
     if ( exists($$opts{context}) ){
         $context = $$opts{context};
     }
@@ -186,9 +192,9 @@ sub runmain
             #$cmd = "awk -v m=$nmeth -v n=$ncover -v f=$Mfloat -v context=$context " . '-v OFS="\t" \'($4==context || context == "ALL") && $6>=n && ($7>=f && $7<=1-f){if($3=="+"){print $1,$2,".\tC\tT\t600\tPASS\t.\tGT\t0/1" ' . " >> \"$$opts{methfile}.p\" " . ' }else{print $1,$2,".\tG\tA\t600\tPASS\t.\tGT\t0/1" ' . ">> \"$$opts{methfile}.n\" " . '} }\' ' . " $$opts{methfile}" ;
             $cmd = "$dirs/splitmr -i $$opts{methfile} -m $nmeth -n $ncover -f $Mfloat -c $context";
             system($cmd) == 0 or die "failed: $!";
-            $cmd = "cat $$opts{vcffile} $$opts{methfile}.p | $path_curf -d > $$opts{methfile}.mrsnp.p";
+            $cmd = "cat $$opts{vcffile} $$opts{methfile}.p > $$opts{methfile}.mrsnp.p";
             system($cmd) == 0 or die "failed: $!";
-            $cmd = "cat $$opts{vcffile} $$opts{methfile}.n | $path_curf -d > $$opts{methfile}.mrsnp.n";
+            $cmd = "cat $$opts{vcffile} $$opts{methfile}.n > $$opts{methfile}.mrsnp.n";
             system($cmd) == 0 or die "failed: $!";
             $cmd="rm $$opts{methfile}.p && rm $$opts{methfile}.n";
             system($cmd) == 0 or die "failed: $!"; 
@@ -230,15 +236,23 @@ sub runmain
 
         print("[Methyhaplo] Haplotype assembly with plus strand DNA methylation information!\n");
         ## plus hap
-        $cmd = "$dirs/extracthairs --strand 1 --bam $newFile --VCF $varfilep --out $$opts{output}.p.fragment --minIS $minIS --maxIS $maxIS --mmq $qual";
+        if( $hicmode == 1) {
+            $cmd = "$dirs/extracthairs --hic $hicmode --strand 1 --bam $newFile --VCF $varfilep --out $$opts{output}.p.fragment --minIS $minIS --mmq $qual";
+        }else {
+            $cmd = "$dirs/extracthairs --strand 1 --bam $newFile --VCF $varfilep --out $$opts{output}.p.fragment --minIS $minIS --maxIS $maxIS --mmq $qual";
+        }
         system($cmd) == 0 or die "failed: $!";
-        $cmd = "$dirs/hapcut2 --fragments $$opts{output}.p.fragment --vcf $varfilep --output $$opts{output}.p.haplo";
+        $cmd = "$dirs/hapcut2 --hic $hicmode --fragments $$opts{output}.p.fragment --vcf $varfilep --output $$opts{output}.p.haplo";
         system($cmd) == 0 or die "failed: $!";
         ## neg 
         print("[Methyhaplo] Haplotype assembly with neg strand DNA methylation information!\n");
-        $cmd = "$dirs/extracthairs --strand 2 --bam $newFile --VCF $varfilen --out $$opts{output}.n.fragment --minIS $minIS --maxIS $maxIS --mmq $qual";
+        if( $hicmode == 1) {
+            $cmd = "$dirs/extracthairs --hic $hicmode --strand 2 --bam $newFile --VCF $varfilen --out $$opts{output}.n.fragment --minIS $minIS --mmq $qual";
+        }else {
+            $cmd = "$dirs/extracthairs --strand 2 --bam $newFile --VCF $varfilen --out $$opts{output}.n.fragment --minIS $minIS --maxIS $maxIS --mmq $qual";
+        }
         system($cmd) == 0 or die "failed: $!";
-        $cmd = "$dirs/hapcut2 --fragments $$opts{output}.n.fragment --vcf $varfilen --output $$opts{output}.n.haplo";
+        $cmd = "$dirs/hapcut2 --hic $hicmode --fragments $$opts{output}.n.fragment --vcf $varfilen --output $$opts{output}.n.haplo";
         system($cmd) == 0 or die "failed: $!";
         $cmd = "rm $$opts{output}.n.fragment && rm $$opts{output}.p.fragment";
         system($cmd) == 0 or die "failed: $!";

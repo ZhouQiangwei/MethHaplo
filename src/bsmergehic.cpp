@@ -66,7 +66,7 @@ int main(int argc,char *argv[])
     FILE* BSfile = File_Open(methyhaploIN,"r");
     int varline=0,perline=0;
     while(fgets(Dummy,BATBUF,BSfile)!=0){
-        if(Dummy[0]=='B' && Dummy[1]=='l'){
+        if((Dummy[0]=='B' && Dummy[1]=='l') || (Dummy[0]=='#' && Dummy[1]=='B') ){
             if(tempblk.start!=0 && tempblk.end!=0){
                 tempblk.datatype=1;
                 Hap.push_back(tempblk);
@@ -179,6 +179,7 @@ int main(int argc,char *argv[])
         blktmp = Hap[i];
         if(blkmerge.start==0) {
             blkmerge=blktmp;
+            strcpy(oldchr, blktmp.chr);
             continue;
         }
         if( strcmp(oldchr, blktmp.chr) != 0){

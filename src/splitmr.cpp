@@ -95,7 +95,7 @@ int main(int argc,char *argv[])
 		sscanf(Dummy,"%s%d%s%s%d%d%f",chrom,&pos,&strand,context,&meth,&cover,&ml);
         nline++;
         if(nline%1000000 == 0){
-            fprintf(stderr, "[MethProcess] Processed %d meth loci", nline);
+            fprintf(stderr, "[MethProcess] Processed %d meth loci\n", nline);
         }
         //if(ml < weight || ml > hweight) continue;
         if(meth < mCover) continue;

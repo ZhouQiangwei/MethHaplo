@@ -1,12 +1,14 @@
 CC = g++
 FLAGS = -O2 
 LDFLAGS = -O2
-LIBS = -m64 -I./src/samtools-0.1.18/ -L./src/samtools-0.1.18/ -lbam -lz -lpthread -lgsl -lgslcblas
+LIBS = -m64 -I./submodules/libbm/ -L./submodules/libbm/ -I./src/samtools-0.1.18/ -L./src/samtools-0.1.18/ -lbam -lz -lpthread -lgsl -lgslcblas -lBinaMeth
 srcdir = ./src
 builddir = ./build
+subdir = ./submodules/libbm
+PWD := $(shell pwd)
 
 TARGET = $(srcdir)/methyhap
-TOCOMPILE = $(builddir)/methyhap.o $(builddir)/paired.o $(builddir)/processPairedBlock.o
+TOCOMPILE = $(builddir)/methyhap.o $(builddir)/paired.o $(builddir)/processPairedBlock.o -Wl,-rpath $(PWD)/$(subdir)
 
 TARGET_asm = $(srcdir)/ASM
 TOCOMPILE_asm = $(builddir)/ASM.o
@@ -36,7 +38,7 @@ TARGET_filgenome = $(srcdir)/filgenome
 TOCOMPILE_filgenome = $(builddir)/filgenome.o
 
 TARGET_splitmr = $(srcdir)/splitmr
-TOCOMPILE_splitmr = $(builddir)/splitmr.o
+TOCOMPILE_splitmr = $(builddir)/splitmr.o -Wl,-rpath $(PWD)/$(subdir)
 
 all: ${TOCOMPILE} ${TOCOMPILE_asm} ${TOCOMPILE_asman} ${TOCOMPILE_others} ${TOCOMPILE_homo} ${TOCOMPILE_asmsitesan} ${TOCOMPILE_bsmerge} ${TOCOMPILE_bsmergehic} ${TOCOMPILE_bam2md} ${TOCOMPILE_filgenome} ${TOCOMPILE_splitmr}
 	${CC} $(LDFLAGS) -o $(TARGET_asm) ${TOCOMPILE_asm}
@@ -49,10 +51,10 @@ all: ${TOCOMPILE} ${TOCOMPILE_asm} ${TOCOMPILE_asman} ${TOCOMPILE_others} ${TOCO
 	${CC} $(LDFLAGS) -o $(TARGET_filgenome) ${TOCOMPILE_filgenome}
 	${CC} $(LDFLAGS) -o $(TARGET_bam2md) ${TOCOMPILE_bam2md} ${LIBS}
 	${CC} $(LDFLAGS) -o $(TARGET) ${TOCOMPILE} ${LIBS}
-	${CC} $(LDFLAGS) -o $(TARGET_splitmr) ${TOCOMPILE_splitmr}
+	${CC} $(LDFLAGS) -o $(TARGET_splitmr) ${TOCOMPILE_splitmr} ${LIBS}
 	cd submodules/HapCUT2 && make
 
-$(TOCOMPILE): $(srcdir)/methyhap.cpp $(srcdir)/methyhap.hpp $(srcdir)/paired.cpp $(srcdir)/paired.hpp $(srcdir)/processPairedBlock.cpp $(srcdir)/processPairedBlock.hpp $(srcdir)/common.hpp $(srcdir)/alignRead.h | $(builddir)
+$(TOCOMPILE): $(srcdir)/methyhap.cpp $(srcdir)/methyhap.hpp $(srcdir)/paired.cpp $(srcdir)/paired.hpp $(srcdir)/processPairedBlock.cpp $(srcdir)/processPairedBlock.hpp $(srcdir)/common.hpp $(srcdir)/alignRead.h -Wl,-rpath $(PWD)/$(subdir) | $(builddir) $(subdir)
 	$(CC) -c $(srcdir)/methyhap.cpp -o $(builddir)/methyhap.o
 	$(CC) -c $(srcdir)/paired.cpp -o $(builddir)/paired.o
 	$(CC) -c $(srcdir)/processPairedBlock.cpp -o $(builddir)/processPairedBlock.o
@@ -67,7 +69,7 @@ $(TOCOMPILE_bam2md): $(srcdir)/bam2md.cpp
 	$(CC) -c $(srcdir)/bam2md.cpp -o $(builddir)/bam2md.o
 
 $(TOCOMPILE_splitmr): $(srcdir)/splitmr.cpp
-	$(CC) -c $(srcdir)/splitmr.cpp -o $(builddir)/splitmr.o
+	$(CC) -c $(srcdir)/splitmr.cpp -o $(builddir)/splitmr.o -Wl,-rpath $(PWD)/$(subdir)
 
 $(TOCOMPILE_asman): $(srcdir)/ASManno.cpp
 	$(CC) -c $(srcdir)/ASManno.cpp -o $(builddir)/ASManno.o

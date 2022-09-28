@@ -11,6 +11,8 @@
 #include <time.h>
 #include <algorithm>
 #include "methyhap.hpp"
+
+#include "../submodules/libbm/binaMeth.h"
 /**
  * Input format, sam format from batmeth2  MD:Z:=================h==========hh=hhh=====h=================h=====h================x==h=
 *SRR179602.48    0       chr3    123850297       60      85M     *       0       0       AAGGAGTTTTTGAAAAATATTAAAAGGGTTATTTAAATATTAAGAAGTAAGATTGTATTTGAATTTGATGAAATTGATGGTAGTT   DEC@=CEBECEEAEE5DD<>CACAC@ADDBBDD?D5=CCCD?DD=ACAC@C,>;?DCDDA?C5CC?D-:DD-:=5DBAD?CBBBA   XT:A:U  NM:i:0  MD:Z:=================h==========hh=hhh=====h=================h=====h================x==h=      XB:Z:BSW
@@ -129,6 +131,8 @@ int process_meth(char* buffer,int& var_t, char& strand, char* chrom, char* conte
 bool sort_methvar(const heterSNP & h1, const heterSNP & h2);
 bool uniq_and_mod(std::deque< heterSNP > & v);
 int filterRead(deque<heterSNP> & HeterSNPs, deque<int> & HeterMeths, alignedread & read, int read_valid_len);
+char strand_str[] = {'+', '-', '.'};
+char *context_str[] = {"C", "CG", "CHG", "CHH"};
 
 int main(int argc, char* argv[])
 {
@@ -143,6 +147,7 @@ int main(int argc, char* argv[])
 		"\t--vcf                 SNP file with genotypes for a single individual in VCF format, V4.1. (use this option or -v option but not both)\n"
 		"\t--PE                  paired-end reads.\n"
 		"\t-m|--methf            methratio file from batmeth2.\n"
+        "\t--bm                  Y/N, BM format for methratio file.\n"
         "\t-c|--context          methylation context process for methyhaplo. CG, CHG, CHH, ALL[default].\n"
 		"\t-M|--NMETH            Number of methylated reads cover cytosine site. default: 2 [m>=2]\n"
 		"\t-N|--NCOVER           Number of coverage reads in cytosine site. default: 6 [n >= 6]\n"
@@ -169,6 +174,7 @@ int main(int argc, char* argv[])
 	char neg_Output_tmp[100];
         char processContext[10];
         strcpy(processContext, "ALL");
+    char bmformat[100];
 	char* SNP_fileName;bool VCF=false;
 	char* Meth_fileName; bool hetero_meth = false;
 	bool paired_end=false;
@@ -191,7 +197,10 @@ int main(int argc, char* argv[])
         }else if(!strcmp(argv[i], "--PE"))
 		{
 			paired_end=true;
-		}else if(!strcmp(argv[i], "-m") || !strcmp(argv[i], "--methf"))
+		}else if(!strcmp(argv[i], "--bm") )
+        {
+            strcpy(bmformat, argv[++i]);
+        }else if(!strcmp(argv[i], "-m") || !strcmp(argv[i], "--methf"))
 		{
 			Meth_fileName=argv[++i];
 			hetero_meth = true;
@@ -375,44 +384,106 @@ int main(int argc, char* argv[])
 			int totalhetero = nReads;
 			//process meth file
 			nReads = 0;
-			FILE* METH_FILE;
 			read_first_line=0; //indicator the first snp
 			
-			METH_FILE=File_Open(Meth_fileName,"r");
 			if(hetero_SNP) printf("\n");
 			char printinf[100];
 			sprintf(printinf, "Reading methratio file, process %s meth context \n", processContext);
 			Show_log(printinf);
 			char chrom[CHROM_NAME_LEN];char strand;
-                        char context[10];
+            char context[10];
 
-			while(fgets(s2t,BATBUF,METH_FILE)!=0)
-			{
-				if(s2t[0]=='#') continue;
-				int heterMeth_tmp;
-				int methfilter = process_meth(s2t, heterMeth_tmp, strand, chrom, context, NMETH, NCOVER, MFloat);
-				if(methfilter != 1) continue;
-				if(strcmp(processContext, "ALL") !=0 && strcmp(processContext, context) != 0 ) continue;
-				if(read_first_line==0 || old_chr_snp != chrom) {
-					read_first_line = -1;
-					if(String_Hash.find(chrom) == String_Hash.end()) {
-						Genome_Count++;
-						String_Hash[chrom]=Genome_Count;
-						chromMeths[Genome_Count].index=Genome_Count;
-						strcpy(chromMeths[Genome_Count].chrom,chrom);
-					}
-					old_chr_snp = chrom;
-				}
-				int H = String_Hash[chrom];
-				if(strand == '+')
-					chromMeths[H].PlusHeterMeths.push_back(heterMeth_tmp);
-				else
-					chromMeths[H].NegHeterMeths.push_back(heterMeth_tmp);
-				nReads++;
-				if (nReads % 1000 == 0) {
-					Show_Progress_Meth(nReads);
-				}
-			}
+            if(strcmp(bmformat, "Y") == 0) {
+               binaMethFile_t *ifp = NULL;
+               ifp = bmOpen(Meth_fileName, NULL, "r");
+               ifp->type = ifp->hdr->version;
+               int SEGlen = 1000000;
+               int start = 0, end = SEGlen-1;
+               bmOverlappingIntervals_t *o;
+               int i=0,j=0;
+               for(i=0;i<ifp->cl->nKeys;i++){
+                   strcpy(chrom, (char*)ifp->cl->chrom[i]);
+                   int len = (int)ifp->cl->len[i];
+                   start = 0, end = SEGlen-1;
+                   while(start<len){
+                       if(end>len){
+                           end = len;
+                       }
+                       o = bmGetOverlappingIntervals(ifp, chrom, start, end+1);
+                       if(o->l) {
+                           for(j=0; j<o->l; j++) {
+                               if(ifp->hdr->version & BM_COVER){
+                                   if(!(o->coverage[j]>=NCOVER)){
+                                       continue;
+                                   }
+                               }
+                               if(!(o->value[j]>=MFloat && o->value[j]<=(1-MFloat))){
+                                   continue;
+                               }
+                               if(ifp->hdr->version & BM_CONTEXT){ 
+                                   strcpy(context, context_str[o->context[j]]);
+                               }
+                               if(strcmp(processContext, "ALL") !=0 && strcmp(processContext, context) != 0 ) continue;
+                               if(read_first_line==0 || old_chr_snp != chrom) {
+                                   read_first_line = -1;
+                                   if(String_Hash.find(chrom) == String_Hash.end()) {
+                                       Genome_Count++;
+                                       String_Hash[chrom]=Genome_Count;
+                                       chromMeths[Genome_Count].index=Genome_Count;
+                                       strcpy(chromMeths[Genome_Count].chrom,chrom);
+                                   }
+                                   old_chr_snp = chrom;
+                               }
+                               int H = String_Hash[chrom];
+                               strand = strand_str[o->strand[j]];
+                               if(strand == '+')
+                                   chromMeths[H].PlusHeterMeths.push_back(o->start[j]);
+                               else
+                                   chromMeths[H].NegHeterMeths.push_back(o->start[j]);
+                               nReads++;
+                               if (nReads % 1000 == 0) {
+                                   Show_Progress_Meth(nReads);
+                               }
+                           }
+                       }
+                       start += SEGlen;
+                       end += SEGlen;
+                   }
+               }
+
+               bmClose(ifp);
+            }else{
+                FILE* METH_FILE = File_Open(Meth_fileName,"r");
+			    while(fgets(s2t,BATBUF,METH_FILE)!=0)
+			    {
+			    	if(s2t[0]=='#') continue;
+			    	int heterMeth_tmp;
+			    	int methfilter = process_meth(s2t, heterMeth_tmp, strand, chrom, context, NMETH, NCOVER, MFloat);
+			    	if(methfilter != 1) continue;
+			    	if(strcmp(processContext, "ALL") !=0 && strcmp(processContext, context) != 0 ) continue;
+			    	if(read_first_line==0 || old_chr_snp != chrom) {
+			    		read_first_line = -1;
+			    		if(String_Hash.find(chrom) == String_Hash.end()) {
+			    			Genome_Count++;
+			    			String_Hash[chrom]=Genome_Count;
+			    			chromMeths[Genome_Count].index=Genome_Count;
+			    			strcpy(chromMeths[Genome_Count].chrom,chrom);
+			    		}
+			    		old_chr_snp = chrom;
+			    	}
+			    	int H = String_Hash[chrom];
+			    	if(strand == '+')
+			    		chromMeths[H].PlusHeterMeths.push_back(heterMeth_tmp);
+			    	else
+			    		chromMeths[H].NegHeterMeths.push_back(heterMeth_tmp);
+			    	nReads++;
+			    	if (nReads % 1000 == 0) {
+			    		Show_Progress_Meth(nReads);
+			    	}
+			    }
+                fclose(METH_FILE);
+            }
+
 			Show_Progress_Meth(nReads);
 			totalhetero += nReads;
 			if(totalhetero < 1){

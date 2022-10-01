@@ -400,7 +400,7 @@ int main(int argc, char* argv[])
                int SEGlen = 1000000;
                int start = 0, end = SEGlen-1;
                bmOverlappingIntervals_t *o;
-               int i=0,j=0;
+               int i=0,j=0,nmeth=0,ncover=0;
                for(i=0;i<ifp->cl->nKeys;i++){
                    strcpy(chrom, (char*)ifp->cl->chrom[i]);
                    int len = (int)ifp->cl->len[i];
@@ -413,13 +413,19 @@ int main(int argc, char* argv[])
                        if(o->l) {
                            for(j=0; j<o->l; j++) {
                                if(ifp->hdr->version & BM_COVER){
+                                   ncover = o->coverage[j];
                                    if(!(o->coverage[j]>=NCOVER)){
                                        continue;
                                    }
+                               }else{
+                                   fprintf(stderr, "Undetected coverage infor in input bm file!");
                                }
                                if(!(o->value[j]>=MFloat && o->value[j]<=(1-MFloat))){
                                    continue;
                                }
+                               nmeth = (int)(o->value[j] * ncover + 0.5);
+                               if(nmeth < NMETH) continue;
+                               if(!(nmeth>2 && ncover-nmeth>2)) continue;
                                if(ifp->hdr->version & BM_CONTEXT){ 
                                    strcpy(context, context_str[o->context[j]]);
                                }
@@ -452,6 +458,13 @@ int main(int argc, char* argv[])
                }
 
                bmClose(ifp);
+
+               Show_Progress_Meth(nReads);
+               totalhetero += nReads;
+               if(totalhetero < 1){
+                   fprintf(stderr, "\nDont contain valid hetero information in meth and snv file!\n");
+                   exit(0);
+               }
             }else{
                 FILE* METH_FILE = File_Open(Meth_fileName,"r");
 			    while(fgets(s2t,BATBUF,METH_FILE)!=0)

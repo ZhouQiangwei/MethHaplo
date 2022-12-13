@@ -164,20 +164,20 @@ sub runmain
                 $cmd = "$dirs/bam2md -g $$opts{genome} -i $$opts{samfile} | samtools sort -o $$opts{samfile}.md.bam - ";
                 print("[Methyhaplo] process bam file and sort!\n[Methyhaplo] $cmd\n");
                 system($cmd) == 0 or die "failed: $!";
-                $cmd = "$dirs/methyhap -o $$opts{output} -m $$opts{methfile} --bm $$opts{bmformat} -b $$opts{samfile}.md.bam  -c $context -M $nmeth -N $ncover -f $Mfloat --minIS $minIS --maxIS $maxIS -q $qual $layout";
+                $cmd = "$dirs/methyhap -o $$opts{output} -m $$opts{methfile} --bm $bmformat -b $$opts{samfile}.md.bam  -c $context -M $nmeth -N $ncover -f $Mfloat --minIS $minIS --maxIS $maxIS -q $qual $layout";
                 system($cmd) == 0 or die "failed: $!";
             }elsif( exists($$opts{bamfile})){
                 $cmd = "$dirs/bam2md -g $$opts{genome} -b $$opts{bamfile} | samtools sort -o $$opts{bamfile}.md.bam - ";
                 print("[Methyhaplo] process bam file and sort!\n[Methyhaplo] $cmd\n");
                 system($cmd) == 0 or die "failed: $!";
-                $cmd = "$dirs/methyhap -o $$opts{output} -m $$opts{methfile} --bm $$opts{bmformat} -b $$opts{bamfile}.md.bam  -c $context -M $nmeth -N $ncover -f $Mfloat --minIS $minIS --maxIS $maxIS -q $qual $layout";
+                $cmd = "$dirs/methyhap -o $$opts{output} -m $$opts{methfile} --bm $bmformat -b $$opts{bamfile}.md.bam  -c $context -M $nmeth -N $ncover -f $Mfloat --minIS $minIS --maxIS $maxIS -q $qual $layout";
                 system($cmd) == 0 or die "failed: $!";
             }
         }else{
             if( exists($$opts{samfile})){
-                $cmd = "$dirs/methyhap -o $$opts{output} -m $$opts{methfile} --bm $$opts{bmformat} -s $$opts{samfile} -c $context -M $nmeth -N $ncover -f $Mfloat --minIS $minIS --maxIS $maxIS -q $qual $layout";
+                $cmd = "$dirs/methyhap -o $$opts{output} -m $$opts{methfile} --bm $bmformat -s $$opts{samfile} -c $context -M $nmeth -N $ncover -f $Mfloat --minIS $minIS --maxIS $maxIS -q $qual $layout";
             }elsif( exists($$opts{bamfile})){
-                $cmd = "$dirs/methyhap -o $$opts{output} -m $$opts{methfile} --bm $$opts{bmformat} -b $$opts{bamfile} -c $context -M $nmeth -N $ncover -f $Mfloat --minIS $minIS --maxIS $maxIS -q $qual $layout";
+                $cmd = "$dirs/methyhap -o $$opts{output} -m $$opts{methfile} --bm $bmformat -b $$opts{bamfile} -c $context -M $nmeth -N $ncover -f $Mfloat --minIS $minIS --maxIS $maxIS -q $qual $layout";
             }else{
                 print("Please define alignment file with -s or -b paramater!\n");
                 exit(1);
@@ -196,7 +196,7 @@ sub runmain
         {
             print("[Methyhaplo] process methfile and vcf file!\n");
             #$cmd = "awk -v m=$nmeth -v n=$ncover -v f=$Mfloat -v context=$context " . '-v OFS="\t" \'($4==context || context == "ALL") && $6>=n && ($7>=f && $7<=1-f){if($3=="+"){print $1,$2,".\tC\tT\t600\tPASS\t.\tGT\t0/1" ' . " >> \"$$opts{methfile}.p\" " . ' }else{print $1,$2,".\tG\tA\t600\tPASS\t.\tGT\t0/1" ' . ">> \"$$opts{methfile}.n\" " . '} }\' ' . " $$opts{methfile}" ;
-            $cmd = "$dirs/splitmr -i $$opts{methfile} --bm $$opts{bmformat} -m $nmeth -n $ncover -f $Mfloat -c $context";
+            $cmd = "$dirs/splitmr -i $$opts{methfile} --bm $bmformat -m $nmeth -n $ncover -f $Mfloat -c $context";
             system($cmd) == 0 or die "failed: $!";
             $cmd = "cat $$opts{vcffile} $$opts{methfile}.p | sort -k1,1V -k2,2n > $$opts{methfile}.mrsnp.p";
             system($cmd) == 0 or die "failed: $!";
@@ -211,7 +211,7 @@ sub runmain
         }else
         {
             #$cmd = "awk -v m=$nmeth -v n=$ncover -v f=$Mfloat -v context=$context " . '-v OFS="\t" \'($4==context || context == "ALL") && $6>=n && ($7>=f && $7<=1-f){if($3=="+"){print $1,$2,".\tC\tT\t600\tPASS\t.\tGT\t0/1" ' . " >> \"$$opts{methfile}.p\" " . ' }else{print $1,$2,".\tG\tA\t600\tPASS\t.\tGT\t0/1" ' . ">> \"$$opts{methfile}.n\" " . '} }\' ' . " $$opts{methfile}" ;
-            $cmd = "$dirs/splitmr -i $$opts{methfile} --bm $$opts{bmformat} -m $nmeth -n $ncover -f $Mfloat -c $context";
+            $cmd = "$dirs/splitmr -i $$opts{methfile} --bm $bmformat -m $nmeth -n $ncover -f $Mfloat -c $context";
             system($cmd) == 0 or die "failed: $!";
             $varfilep = "$$opts{methfile}.p";
             $varfilen = "$$opts{methfile}.n";

@@ -327,6 +327,12 @@ void bmDestroyOverlappingIntervals(bmOverlappingIntervals_t *o) {
     if(o->start) free(o->start);
     if(o->end) free(o->end);
     if(o->value) free(o->value);
+
+    if(o->coverage) free(o->coverage);
+    if(o->strand) free(o->strand);
+    if(o->context) free(o->context);
+    if(o->entryid) free(o->entryid);
+
     free(o);
 }
 

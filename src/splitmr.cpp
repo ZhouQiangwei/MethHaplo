@@ -160,7 +160,7 @@ int main(int argc,char *argv[])
 	    	}
 
 	    	//chrM    1       -       CHH     2       1795    0.001114
-	    	sscanf(Dummy,"%s%d%s%s%d%d%f",chrom,&pos,&strand,context,&meth,&cover,&ml);
+	    	sscanf(Dummy,"%s%d%s%s%d%d%f",&chrom,&pos,&strand,&context,&meth,&cover,&ml);
             nline++;
             if(nline%1000000 == 0){
                 fprintf(stderr, "[MethProcess] Processed %d meth loci\n", nline);

@@ -32,7 +32,7 @@ TARGET_homo = $(srcdir)/homometh
 TOCOMPILE_homo = $(builddir)/homometh.o
 
 TARGET_bam2md = $(srcdir)/bam2md
-TOCOMPILE_bam2md = $(builddir)/bam2md.o
+TOCOMPILE_bam2md = $(builddir)/bam2md.o -Wl,-rpath $(PWD)/$(subdir)
 
 TARGET_filgenome = $(srcdir)/filgenome
 TOCOMPILE_filgenome = $(builddir)/filgenome.o
@@ -40,8 +40,7 @@ TOCOMPILE_filgenome = $(builddir)/filgenome.o
 TARGET_splitmr = $(srcdir)/splitmr
 TOCOMPILE_splitmr = $(builddir)/splitmr.o -Wl,-rpath $(PWD)/$(subdir)
 
-all: ${TOCOMPILE} ${TOCOMPILE_asm} ${TOCOMPILE_asman} ${TOCOMPILE_others} ${TOCOMPILE_homo} ${TOCOMPILE_asmsitesan} ${TOCOMPILE_bsmerge} ${TOCOMPILE_bsmergehic} ${TOCOMPILE_filgenome} ${TOCOMPILE_splitmr} 
-    #${TOCOMPILE_bam2md}
+all: ${TOCOMPILE} ${TOCOMPILE_asm} ${TOCOMPILE_asman} ${TOCOMPILE_others} ${TOCOMPILE_homo} ${TOCOMPILE_asmsitesan} ${TOCOMPILE_bsmerge} ${TOCOMPILE_bsmergehic} ${TOCOMPILE_filgenome} ${TOCOMPILE_splitmr} ${TOCOMPILE_bam2md}
 	${CC} $(LDFLAGS) -o $(TARGET_asm) ${TOCOMPILE_asm}
 	${CC} $(LDFLAGS) -o $(TARGET_asman) ${TOCOMPILE_asman}
 	${CC} $(LDFLAGS) -o $(TARGET_asmsitesan) ${TOCOMPILE_asmsitesan}
@@ -50,7 +49,7 @@ all: ${TOCOMPILE} ${TOCOMPILE_asm} ${TOCOMPILE_asman} ${TOCOMPILE_others} ${TOCO
 	${CC} $(LDFLAGS) -o $(TARGET_bsmergehic) ${TOCOMPILE_bsmergehic}
 	${CC} $(LDFLAGS) -o $(TARGET_others) ${TOCOMPILE_others}
 	${CC} $(LDFLAGS) -o $(TARGET_filgenome) ${TOCOMPILE_filgenome}
-	#${CC} $(LDFLAGS) -o $(TARGET_bam2md) ${TOCOMPILE_bam2md} ${LIBS}
+	${CC} $(LDFLAGS) -o $(TARGET_bam2md) ${TOCOMPILE_bam2md} ${LIBS}
 	${CC} $(LDFLAGS) -o $(TARGET) ${TOCOMPILE} ${LIBS}
 	${CC} $(LDFLAGS) -o $(TARGET_splitmr) ${TOCOMPILE_splitmr} ${LIBS}
 	cd submodules/HapCUT2 && make
@@ -66,8 +65,8 @@ $(TOCOMPILE_asm): $(srcdir)/ASM.cpp
 $(TOCOMPILE_filgenome): $(srcdir)/filgenome.cpp
 	$(CC) -c $(srcdir)/filgenome.cpp -o $(builddir)/filgenome.o
 
-#$(TOCOMPILE_bam2md): $(srcdir)/bam2md.cpp
-#	$(CC) -c $(srcdir)/bam2md.cpp -o $(builddir)/bam2md.o
+$(TOCOMPILE_bam2md): $(srcdir)/bam2md.cpp
+	$(CC) -c $(srcdir)/bam2md.cpp -o $(builddir)/bam2md.o -Wl,-rpath $(PWD)/$(subdir)
 
 $(TOCOMPILE_splitmr): $(srcdir)/splitmr.cpp
 	$(CC) -c $(srcdir)/splitmr.cpp -o $(builddir)/splitmr.o -Wl,-rpath $(PWD)/$(subdir)
@@ -112,6 +111,6 @@ install:
 	cp submodules/HapCUT2/build/extractHAIRS ./bin/extracthairs
 	cp scripts/methHaplo ./bin/
 	cp scripts/bamStrand ./bin/
-	#cp src/bam2md ./bin/
+	cp src/bam2md ./bin/
 	cp src/filgenome ./bin/
 	cp src/splitmr ./bin/

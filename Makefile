@@ -41,6 +41,7 @@ TARGET_splitmr = $(srcdir)/splitmr
 TOCOMPILE_splitmr = $(builddir)/splitmr.o -Wl,-rpath $(PWD)/$(subdir)
 
 all: ${TOCOMPILE} ${TOCOMPILE_asm} ${TOCOMPILE_asman} ${TOCOMPILE_others} ${TOCOMPILE_homo} ${TOCOMPILE_asmsitesan} ${TOCOMPILE_bsmerge} ${TOCOMPILE_bsmergehic} ${TOCOMPILE_filgenome} ${TOCOMPILE_splitmr} ${TOCOMPILE_bam2md}
+	make -C submodules/libbm
 	${CC} $(LDFLAGS) -o $(TARGET_asm) ${TOCOMPILE_asm}
 	${CC} $(LDFLAGS) -o $(TARGET_asman) ${TOCOMPILE_asman}
 	${CC} $(LDFLAGS) -o $(TARGET_asmsitesan) ${TOCOMPILE_asmsitesan}
@@ -95,6 +96,7 @@ $(TOCOMPILE_bsmergehic): $(srcdir)/bsmergehic.cpp
 clean:
 	rm -f $(builddir)/*.o $(TARGET) $(TARGET_asm) $(TARGET_asman) $(TARGET_homo) $(TARGET_others) $(TARGET_asmsitesan) $(TARGET_bsmerge) $(TARGET_bsmergehic) $(TARGET_bam2md) $(TARGET_filgenome) $(TARGET_splitmr)
 	rm -rf submodules/HapCUT2/build/
+	make clean -C submodules/libbm/
 	if [ -d "bin" ]; then rm -r bin; fi
 
 install:

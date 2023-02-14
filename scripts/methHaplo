@@ -198,9 +198,9 @@ sub runmain
             #$cmd = "awk -v m=$nmeth -v n=$ncover -v f=$Mfloat -v context=$context " . '-v OFS="\t" \'($4==context || context == "ALL") && $6>=n && ($7>=f && $7<=1-f){if($3=="+"){print $1,$2,".\tC\tT\t600\tPASS\t.\tGT\t0/1" ' . " >> \"$$opts{methfile}.p\" " . ' }else{print $1,$2,".\tG\tA\t600\tPASS\t.\tGT\t0/1" ' . ">> \"$$opts{methfile}.n\" " . '} }\' ' . " $$opts{methfile}" ;
             $cmd = "$dirs/splitmr -i $$opts{methfile} --bm $bmformat -m $nmeth -n $ncover -f $Mfloat -c $context";
             system($cmd) == 0 or die "failed: $!";
-            $cmd = "awk '!(toupper($4)==\"C\" && toupper($5)==\"T\")' $$opts{vcffile} | cat - $$opts{methfile}.p | sort -k1,1V -k2,2n > $$opts{methfile}.mrsnp.p";
+            $cmd = "awk '\$0!~/^#/ && !((toupper(\$4)==\"C\" && toupper(\$5)==\"T\") || (toupper(\$4)==\"T\" && toupper(\$5)==\"C\") )' $$opts{vcffile} | cat - $$opts{methfile}.p | cut -f1-10 | sort -k1,1V -k2,2n > $$opts{methfile}.mrsnp.p";
             system($cmd) == 0 or die "failed: $!";
-            $cmd = "awk '!(toupper($4)==\"G\" && toupper($5)==\"A\")' $$opts{vcffile} | cat - $$opts{methfile}.n | sort -k1,1V -k2,2n > $$opts{methfile}.mrsnp.n";
+            $cmd = "awk '\$0!~/^#/ && !((toupper(\$4)==\"G\" && toupper(\$5)==\"A\") || (toupper(\$4)==\"A\" && toupper(\$5)==\"G\"))' $$opts{vcffile} | cat - $$opts{methfile}.n | cut -f1-10 | sort -k1,1V -k2,2n > $$opts{methfile}.mrsnp.n";
             system($cmd) == 0 or die "failed: $!";
             $cmd="rm $$opts{methfile}.p && rm $$opts{methfile}.n";
             system($cmd) == 0 or die "failed: $!"; 

@@ -84,7 +84,7 @@ int main(int argc,char *argv[])
 	
 	
 	char Dummy[BATBUF];
-	char chrom[100];
+	char chrom[100]; char strands[10];
     char strand;char context[10];
     int meth=0;int cover=0;float ml=0;
     int pos=0;
@@ -160,7 +160,8 @@ int main(int argc,char *argv[])
 	    	}
 
 	    	//chrM    1       -       CHH     2       1795    0.001114
-	    	sscanf(Dummy,"%s%d%s%s%d%d%f",&chrom,&pos,&strand,&context,&meth,&cover,&ml);
+	    	sscanf(Dummy,"%s%d%s%s%d%d%f",&chrom,&pos,&strands,&context,&meth,&cover,&ml);
+            strand = strands[0];
             nline++;
             if(nline%1000000 == 0){
                 fprintf(stderr, "[MethProcess] Processed %d meth loci\n", nline);

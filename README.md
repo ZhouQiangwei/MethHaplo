@@ -1,3 +1,16 @@
+<p align="left">
+  <a href="https://github.com/ZhouQiangwei/MethHaplo/releases"><img src="https://img.shields.io/github/v/release/ZhouQiangwei/MethHaplo"></a>
+  <img src="https://img.shields.io/github/license/ZhouQiangwei/MethHaplo">
+  <img src="https://img.shields.io/github/stars/ZhouQiangwei/MethHaplo">
+  <a href="https://github.com/ZhouQiangwei/MethHaplo/issues"><img src="https://img.shields.io/github/issues/ZhouQiangwei/MethHaplo?color=red"></a>
+  <img src="https://img.shields.io/github/forks/ZhouQiangwei/MethHaplo?color=teal">
+
+  <img src="https://img.shields.io/github/downloads/ZhouQiangwei/MethHaplo/total">
+  <img src="https://img.shields.io/github/watchers/ZhouQiangwei/MethHaplo">
+  <a href='https://github.com/ZhouQiangwei/MethHaplo'><img alt='GitHub Clones' src='https://img.shields.io/badge/dynamic/json?color=success&label=Clone&query=count&url=https://gist.githubusercontent.com/ZhouQiangwei/a388a9268d2c5696cc961831f136dfcd/raw/clone.json&logo=github'></a>
+  <a href="https://github.com/ZhouQiangwei/MethHaplo"><img src="https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2FZhouQiangwei%2FMethHaplo&count_bg=%2379C83D&title_bg=%23555555&icon=&icon_color=%23E7E7E7&title=views&edge_flat=false"/></a>
+</p>
+
 ## MethHaplo: Combining Allele-specific DNA Methylation and SNPs for Haplotype Region Identification 
 
 DNA methylation is an important epigenetic modification that plays a critical role in most eukaryotic organisms. Parental alleles in haploid genomes may exhibit different methylation patterns, which can lead to different phenotypes and even different therapeutic and drug responses to diseases. However, to our knowledge, no software is available for the identification of DNA methylation haplotype regions. In this paper, we developed a new method, MethHaplo, that identify DNA methylation haplotype regions with allele-specific DNA methylation and single nucleotide polymorphisms (SNPs) from whole-genome bisulfite sequencing (WGBS) data. Our results showed that methylation haplotype regions were ten times longer than haplotypes with SNPs only. When we integrate WGBS and high-throughput chromosome conformation capture (Hi-C) data, MethHaplo could call even longer haplotypes. By constructing methylation haplotypes for various cell lines, we provide a clearer picture of the effect of DNA methylation on gene expression, histone modification and three-dimensional chromosome structure at the haplotype level. Our method could benefit the study of parental inheritance-related disease and heterosis in agriculture.
